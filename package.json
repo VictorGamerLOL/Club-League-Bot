@@ -1,0 +1,15 @@
+{
+  "name": "club-league-bot",
+  "version": "1.0.0",
+  "description": "A simple bot to manage ping roles according to club league dates",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "SEE LICENSE IN LICENSE",
+  "dependencies": {
+    "discord.js": "^13.6.0",
+    "node-schedule": "^2.1.0"
+  }
+}
