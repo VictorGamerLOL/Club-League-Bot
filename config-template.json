@@ -1,3 +1,6 @@
 {
-    "guildId": "YOURSERVERIDHERE"
+    "guildId": "YOURSERVERIDHERE",
+    "token" : "YOURTOKENHERE",
+    "cliendId": "YOURCLIENTIDHERE",
+    "pingRoleId": "YOURROLEIDHERE"
 }
