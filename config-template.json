@@ -2,5 +2,7 @@
     "guildId": "YOURSERVERIDHERE",
     "token" : "YOURTOKENHERE",
     "cliendId": "YOURCLIENTIDHERE",
-    "pingRoleId": "YOURROLEIDHERE"
+    "pingRoleId": "YOURROLEIDHERE",
+    "pingChannelId": "YOURCHANNELIDHERE",
+    "logChannelId": "YOURCHANNELIDHERE"
 }

@@ -1,34 +1,25 @@
 const Discord = require('discord.js')
 const schedule = require('node-schedule')
-const {guildId, token, clientId, pingRoleId} = require('./config.json')
+const {guildId, token, clientId, pingRoleId, pingChannelId, logChannelId} = require('./config.json')
 const { REST }= require('@discordjs/rest')
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { Routes } = require('discord-api-types/v9');
+const fs = require('fs')
 
-const rule1 = new schedule.RecurrenceRule()
-rule1.dayOfWeek = 3;
-rule1.hour = 14;
-rule1.minute = 0;
+const rulesStart = new schedule.RecurrenceRule()
+rulesStart.dayOfWeek = [0, 3, 5]
+rulesStart.hour = 14
+rulesStart.minute = 0
 
-const rule2 = new schedule.RecurrenceRule()
-rule2.dayOfWeek = 4;
-rule2.hour = 14;
-rule2.minute = 0;
+const rules1HourBefore = new schedule.RecurrenceRule()
+rules1HourBefore.dayOfWeek = [1, 4, 6]
+rules1HourBefore.hour = 13
+rules1HourBefore.minute = 0
 
-const rule3 = new schedule.RecurrenceRule()
-rule3.dayOfWeek = 5;
-rule3.hour = 14;
-rule3.minute = 0;
-
-const rule4 = new schedule.RecurrenceRule()
-rule4.dayOfWeek = 6;
-rule4.hour = 14;
-rule4.minute = 0;
-
-const rule5 = new schedule.RecurrenceRule()
-rule5.dayOfWeek = 0;
-rule5.hour = 14;
-rule5.minute = 0;
+const rulesEnd = new schedule.RecurrenceRule()
+rulesEnd.dayOfWeek = [1, 4, 6]
+rulesEnd.hour = 14
+rulesEnd.minute = 0
 
 
 const myIntents = new Discord.Intents()
@@ -55,14 +46,17 @@ const client = new Discord.Client({intents: myIntents,partials: ['MESSAGE', 'CHA
 
 const sendCommand = new SlashCommandBuilder()
     .setName('send')
-    .setDescription('Send the message with the buttons to a specified channel')
-    .addChannelOption(option => 
-        option.setName('channel')
-            .setDescription('The channel to send the message to')
-            .setRequired(true))
+    .setDescription('Send the message with the buttons to a specified channel.')
+const giveRoleCommand = new SlashCommandBuilder()
+    .setName('giverole')
+    .setDescription('Give everyone on the server the club notification role.')
+const takeRoleCommand = new SlashCommandBuilder()
+    .setName('takerole')
+    .setDescription('Take away from everyone on the server the club notification role.')
 var commands = [];
-console.log(commands)
 commands.push(sendCommand.toJSON())
+commands.push(giveRoleCommand.toJSON())
+commands.push(takeRoleCommand.toJSON())
 
 async function putCommands () {
 	try {
@@ -82,7 +76,7 @@ putCommands()
 
 async function commandSend (interaction) {
     await interaction.deferReply()
-    let channel = interaction.options.getChannel('channel')
+    let channel = client.channels.fetch(pingChannelId)
     let yes = new Discord.MessageButton()
         .setCustomId("yes")
         .setLabel("Yes")
@@ -93,40 +87,132 @@ async function commandSend (interaction) {
         .setStyle("DANGER")
     let row = new Discord.MessageActionRow()
         .addComponents([yes, no])
-    channel.send({
-        content: "Have you done your club league?",
+    const message = await channel.send({
+        content: "<@&${pingRoleId}>\nA new day of Club league has started.\nHave you done your club league?",
         components: [row]
     })
-    interaction.editReply("I will send the message to the channel you specified")
+    fs.writeFileSync('./message.txt', message.id)
+    interaction.editReply("I sent the message to the channel you specified")
+}
+async function commandGiveRole (interaction) {
+    await interaction.deferReply()
+    let guild = await client.guilds.fetch(guildId)
+    let members = await guild.members.fetch()
+    for (let member of members) {
+        if (!member[1].roles.cache.has(pingRoleId)) { //Do not ask me why it starts at array index 1 for I do not know why :<
+            await member[1].roles.add(pingRoleId)
+        }
+    }
+    interaction.editReply("I have given everyone the role.")
+}
+async function commandTakeRole (interaction) {
+    await interaction.deferReply()
+    let guild = await client.guilds.fetch(guildId)
+    let members = await guild.members.fetch()
+    for (let member of members) {
+        if (member[1].roles.cache.has(pingRoleId)) { //Do not ask me why it starts at array index 1 for I do not know why :<
+            await member[1].roles.remove(pingRoleId)
+        }
+    }
+    interaction.editReply("I taken away the role from everyone.")
 }
 
 async function buttonYes (interaction) {
     await interaction.deferReply({ephemeral: true})
-    try {
-        interaction.member.roles.remove(pingRoleId)
-        interaction.editReply("You have been removed from the ping role. Thanks for doing your part.")
-    } catch {
+    if (!await interaction.member.roles.cache.has(pingRoleId)) {
         interaction.editReply("You already have done club league what do you want?")
+        return
     }
+    interaction.member.roles.remove(pingRoleId)
+    interaction.editReply("You have been removed from the notification role. Thanks for doing your part.")
     return
 }
 async function buttonNo (interaction) {
     await interaction.deferReply({ephemeral: true})
-    try {
-        interaction.member.roles.add(pingRoleId)
-        interaction.editReply("You have gained the club league ping role")
-    } catch {
-        interaction.editReply("You already have the club league ping role")
+    if (await interaction.member.roles.cache.has(pingRoleId)) {
+        interaction.editReply("You already have the club league notification role what do you want?")
+        return
     }
+    interaction.member.roles.add(pingRoleId)
+    interaction.editReply("You have gained the club league notification role")
     return
+}
+async function startOfDay (){
+    const guild = await client.guilds.fetch(guildId)
+    const channel = await client.channels.fetch(pingChannelId)
+    const members = await guild.members.fetch()
+    for (let member of members) {
+        if (!member[1].roles.cache.has(pingRoleId)) { //Do not ask me why it starts at array index 1 for I do not know why :<
+            await member[1].roles.add(pingRoleId)
+        }
+    }
+    let yes = new Discord.MessageButton()
+        .setCustomId("yes")
+        .setLabel("Yes")
+        .setStyle("SUCCESS")
+    let no = new Discord.MessageButton()
+        .setCustomId("no")
+        .setLabel("No")
+        .setStyle("DANGER")
+    let row = new Discord.MessageActionRow()
+        .addComponents([yes, no])
+    const message = await channel.send({
+        content: `<@&${pingRoleId}>\nA new day of Club league has started.\nHave you done your club league?`,
+        components: [row]
+    })
+    fs.writeFileSync('./message.txt', message.id)
+}
+async function oneHourBefore (){
+    const channel = await client.channels.fetch(pingChannelId)
+    const message = await channel.send(`<@&${pingRoleId}>\n1 hour remains of club league.\nHave you done your club league?`)
+    fs.writeFileSync('./message2.txt', message.id)
+}
+async function endOfDay (){
+    let notDoneMembers = []
+    const guild = await client.guilds.fetch(guildId)
+    const channel = await client.channels.fetch(pingChannelId)
+    const logChannel = await client.channels.fetch(logChannelId)
+    const members = await guild.members.fetch()
+    for (let member of members) {
+        if (member[1].roles.cache.has(pingRoleId)) { //Do not ask me why it starts at array index 1 for I do not know why :<
+            notDoneMembers.push(member[1].id)
+            await member[1].roles.remove(pingRoleId)
+        }
+    }
+    try {
+        const message = await channel.messages.fetch(fs.readFileSync('./message.txt', 'utf8'))
+        message.delete()
+    } catch {}
+    try {
+        const message2 = await channel.messages.fetch(fs.readFileSync('./message2.txt', 'utf8'))
+        message2.delete()
+    } catch {}
+    let logMessage = `Members that did not do club league:\n`
+    notDoneMembers.forEach(memberid => {
+        logMessage += `<@${memberid}>\n`
+    })
+    logChannel.send(logMessage)
+
 }
 
 client.on('interactionCreate', async function(interaction) {
     if (interaction.isCommand()) {
+        if (!interaction.member.permissions.has('ADMINISTRATOR')) {
+            interaction.reply("You are not allowed to use this command")
+            return
+        }
         if (interaction.commandName === 'send') {
             commandSend(interaction)
+            return
         }
-        else return
+        if (interaction.commandName === 'giverole') {
+            commandGiveRole(interaction)
+            return
+        }
+        if (interaction.commandName === 'takerole') {
+            commandTakeRole(interaction)
+            return
+        }
     }
     if (interaction.isButton()) {
         if (interaction.customId === 'yes') {
@@ -137,3 +223,7 @@ client.on('interactionCreate', async function(interaction) {
     }
 })
 client.login(token)
+
+const jobStart = schedule.scheduleJob(rulesStart, startOfDay)
+const jobOneHourBefore = schedule.scheduleJob(rules1HourBefore, oneHourBefore)
+const jobEnd = schedule.scheduleJob(rulesEnd, endOfDay)

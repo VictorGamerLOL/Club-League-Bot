@@ -126,5 +126,10 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# the actual config file
+# the actual config file and files bot uses to store data
 config.json
+message.txt
+message2.txt
+
+# my todo list
+todo.md
