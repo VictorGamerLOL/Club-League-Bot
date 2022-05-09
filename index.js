@@ -179,14 +179,10 @@ async function endOfDay (){
             await member[1].roles.remove(pingRoleId)
         }
     }
-    try {
-        const message = await channel.messages.fetch(fs.readFileSync('./message.txt', 'utf8'))
-        message.delete()
-    } catch {}
-    try {
-        const message2 = await channel.messages.fetch(fs.readFileSync('./message2.txt', 'utf8'))
-        message2.delete()
-    } catch {}
+    const message = await channel.messages.fetch(fs.readFileSync('./message.txt', 'utf8'))
+    message.delete()
+    const message2 = await channel.messages.fetch(fs.readFileSync('./message2.txt', 'utf8'))
+    message2.delete()
     let logMessage = `Members that did not do club league:\n`
     notDoneMembers.forEach(memberid => {
         logMessage += `<@${memberid}>\n`
