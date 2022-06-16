@@ -1,12 +1,11 @@
 const Discord = require('discord.js');
 const {guildId, token, clientId, pingRoleId, pingChannelId, logChannelId} = require('../../../config.json')
-const { SlashCommandBuilder } = require('@discordjs/builders')
 
 module.exports = {
     name: 'giverole',
     description: 'Give everyone on the server the club notification role.',
     slashBuilder () {
-        const command = new SlashCommandBuilder()
+        const command = new Discord.SlashCommandBuilder()
             .setName('giverole')
             .setDescription('Give everyone on the server the club notification role.')
         return command.toJSON() 

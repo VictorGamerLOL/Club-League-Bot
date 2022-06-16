@@ -2,32 +2,22 @@ const Discord = require('discord.js')
 const schedule = require('node-schedule')
 const {guildId, token, clientId, pingRoleId, pingChannelId, logChannelId} = require('../config.json')
 const { REST }= require('@discordjs/rest')
-const { SlashCommandBuilder } = require('@discordjs/builders')
 const { Routes } = require('discord-api-types/v9');
 const fs = require('fs')
 const sql = require('./utilities/sqlHandler.js')
 const path = require('path')
-const myIntents = new Discord.Intents()
-	.add(Discord.Intents.FLAGS.GUILDS)
-	.add(Discord.Intents.FLAGS.GUILD_MEMBERS)
-	.add(Discord.Intents.FLAGS.GUILD_BANS)
-	.add(Discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS)
-	.add(Discord.Intents.FLAGS.GUILD_INTEGRATIONS)
-	.add(Discord.Intents.FLAGS.GUILD_WEBHOOKS)
-	.add(Discord.Intents.FLAGS.GUILD_INVITES)
-	.add(Discord.Intents.FLAGS.GUILD_VOICE_STATES) //All the intents just to be sure :)
-	.add(Discord.Intents.FLAGS.GUILD_PRESENCES)
-	.add(Discord.Intents.FLAGS.GUILD_MESSAGES)
-	.add(Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS)
-	.add(Discord.Intents.FLAGS.GUILD_MESSAGE_TYPING)
-	.add(Discord.Intents.FLAGS.DIRECT_MESSAGES)
-	.add(Discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS)
-	.add(Discord.Intents.FLAGS.DIRECT_MESSAGE_TYPING)
-	.add(Discord.Intents.FLAGS.GUILD_SCHEDULED_EVENTS)
+const myIntents = []
+myIntents.push(Discord.GatewayIntentBits.Guilds)
+myIntents.push(Discord.GatewayIntentBits.GuildMembers)
+myIntents.push(Discord.GatewayIntentBits.GuildPresences)
+myIntents.push(Discord.GatewayIntentBits.GuildVoiceStates)
+myIntents.push(Discord.GatewayIntentBits.GuildMessages)
+myIntents.push(Discord.GatewayIntentBits.GuildMessageReactions)
+myIntents.push(Discord.GatewayIntentBits.MessageContent)
 
 const rest = new REST({ version: '9' }).setToken(token);
 
-const client = new Discord.Client({intents: myIntents,partials: ['MESSAGE', 'CHANNEL', 'REACTION']}); //Init Discord Client Instance
+const client = new Discord.Client({intents: myIntents,partials: [Discord.Partials.Message, Discord.Partials.Channel, Discord.Partials.Reaction, Discord.Partials.GuildMember]}); //Init Discord Client Instance
 
 client.commands = new Discord.Collection();
 const commandFolders = fs.readdirSync(path.join(__dirname, './commands')); //Get folder of commands and sync with fs
@@ -102,15 +92,15 @@ async function startOfDay (){
             await member[1].roles.add(pingRoleId)
         }
     }
-    let yes = new Discord.MessageButton()
+    let yes = new Discord.ButtonBuilder()
         .setCustomId("yes")
         .setLabel("Yes")
-        .setStyle("SUCCESS")
-    let no = new Discord.MessageButton()
+        .setStyle(Discord.ButtonStyle.Success)
+    let no = new Discord.ButtonBuilder()
         .setCustomId("no")
         .setLabel("No")
-        .setStyle("DANGER")
-    let row = new Discord.MessageActionRow()
+        .setStyle(Discord.ButtonStyle.Danger)
+    let row = new Discord.ActionRowBuilder()
         .addComponents([yes, no])
     const message = await channel.send({
         content: `<@&${pingRoleId}>\nA new day of Club league has started.\nHave you done your club league?`,
@@ -148,7 +138,7 @@ async function endOfDay (){
 }
 
 client.on('interactionCreate', async function(interaction) {
-    if (interaction.isCommand()) {
+    if (interaction.type == Discord.InteractionType.ApplicationCommand) {
         if (!interaction.member.permissions.has('ADMINISTRATOR')) {
             interaction.reply("You are not allowed to use this command")
             return
@@ -157,7 +147,7 @@ client.on('interactionCreate', async function(interaction) {
         if (!command) return
         command.execute(interaction)
     }
-    if (interaction.isButton()) {
+    if (interaction.type == Discord.InteractionType.MessageComponent) {
         if (interaction.customId === 'yes') {
             buttonYes(interaction)
         } if (interaction.customId === 'no') {

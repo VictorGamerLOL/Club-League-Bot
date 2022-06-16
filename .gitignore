@@ -137,3 +137,4 @@ test.js
 
 #Do I really need to say why?
 .vscode
+database.db

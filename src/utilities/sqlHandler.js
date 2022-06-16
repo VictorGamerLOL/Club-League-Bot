@@ -19,6 +19,15 @@ database.query = function (sql, params) { //Stolen function from the internet be
         })
     })
 }
+database.execute = function (sql, params) {
+    var that = this
+    return new Promise(function (resolve, reject) {
+        that.run(sql, params, function (error) {
+            if (error) reject(error)
+            else resolve()
+        })
+    })
+}
 
 const SQLHandler = {
     init: async () => {
@@ -28,23 +37,57 @@ const SQLHandler = {
         }
         database.run(`PRAGMA foreign_keys = OFF`)
         await delay(1000)
-        database.run(`CREATE TABLE IF NOT EXISTS teams (
+        await database.execute(`CREATE TABLE IF NOT EXISTS teams (
             name TEXT PRIMARY KEY NOT NULL,
-            user1 TEXT DEFAULT NULL,
-            user2 TEXT DEFAULT NULL,
-            user3 TEXT DEFAULT NULL,
-            FOREIGN KEY (user1) REFERENCES users(name) ON DELETE SET NULL,
-            FOREIGN KEY (user2) REFERENCES users(name) ON DELETE SET NULL,
-            FOREIGN KEY (user3) REFERENCES users(name) ON DELETE SET NULL
+            roleid TEXT NOT NULL DEFAULT 0,
+            user1 TEXT DEFAULT "Nobody",
+            user2 TEXT DEFAULT "Nobody",
+            user3 TEXT DEFAULT "Nobody",
+            FOREIGN KEY (user1) REFERENCES users(name) ON DELETE SET DEFAULT,
+            FOREIGN KEY (user2) REFERENCES users(name) ON DELETE SET DEFAULT,
+            FOREIGN KEY (user3) REFERENCES users(name) ON DELETE SET DEFAULT
         )`)
-        database.run(`CREATE TABLE IF NOT EXISTS users (
+        await database.execute(`INSERT INTO teams (name) VALUES ("No Team")`)
+        await database.execute(`CREATE TABLE IF NOT EXISTS users (
             id TEXT PRIMARY KEY NOT NULL,
             eventNotifs INTEGER NOT NULL DEFAULT 1,
             scrimsNotifs INTEGER NOT NULL DEFAULT 0,
-            team TEXT DEFAULT NULL,
-            FOREIGN KEY (team) REFERENCES teams(name) ON DELETE SET NULL
+            team TEXT DEFAULT "No Team",
+            FOREIGN KEY (team) REFERENCES teams(name) ON DELETE SET DEFAULT
         )`)
-        database.run(`PRAGMA foreign_keys = ON`)
+        await database.execute(`INSERT INTO users (id) VALUES ("Nobody")`)
+        await database.execute(`PRAGMA foreign_keys = ON`)
+    },
+    regentables: async (membersList) => {
+        await database.execute(`PRAGMA foreign_keys = OFF`)
+        await database.execute(`DELETE FROM users WHERE NOT id="Nobody"`)
+        let query = `INSERT INTO users (id) VALUES `
+        for (let member of membersList) {
+            query += `('${member}'), `
+        }
+        query = query.slice(0, -2)
+        console.log(query)
+        await database.execute(query, [])
+        await database.execute(`PRAGMA foreign_keys = ON`)
+    },
+    fetchteams: async () => {
+        const teams = await database.query(`SELECT * FROM teams`, [])
+        return teams
+    },
+    fetchteam: async (teamname) => {
+        const team = await database.query(`SELECT * FROM teams WHERE name=?`, [teamname])
+        return team[0]
+    },
+    maketeam: async (teamName, roleid) => {
+        await database.execute(`INSERT INTO teams (name, roleid) VALUES ("${teamName}", "${roleid}")`)
+    },
+    setteam: async (userIds, teamName) => {
+        await database.execute(`UPDATE teams SET user1="${userIds[0]}", user2="${userIds[1]}", user3="${userIds[2]}" WHERE name="${teamName}"`)
+        await database.execute(`UPDATE users SET team="${teamName}" WHERE id="${userIds[0]}" OR id="${userIds[1]}" OR id="${userIds[2]}"`)
+    },
+    resetteam: async (teamName) => {
+        await database.execute(`UPDATE teams SET user1="Nobody", user2="Nobody", user3="Nobody" WHERE name="${teamName}"`)
+        await database.execute(`UPDATE users SET team="No Team" WHERE team="${teamName}"`)
     }
 }
 
