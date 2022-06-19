@@ -128,14 +128,12 @@ async function oneHourBefore (){
     fs.writeFileSync('./message2.txt', message.id)
 }
 async function endOfDay (){
-    let notDoneMembers = []
     const guild = await client.guilds.fetch(guildId)
     const channel = await client.channels.fetch(pingChannelId)
     const logChannel = await client.channels.fetch(logChannelId)
     const members = await guild.members.fetch()
     for (let member of members) {
         if (member[1].roles.cache.has(pingRoleId)) { //Do not ask me why it starts at array index 1 for I do not know why :<
-            notDoneMembers.push(member[1].id)
             await member[1].roles.remove(pingRoleId)
         }
     }
@@ -143,11 +141,6 @@ async function endOfDay (){
     message.delete()
     const message2 = await channel.messages.fetch(fs.readFileSync('../message2.txt', 'utf8'))
     message2.delete()
-    let logMessage = `Members that did not do club league:\n`
-    notDoneMembers.forEach(memberid => {
-        logMessage += `<@${memberid}>\n`
-    })
-    logChannel.send(logMessage)
 
 }
 
