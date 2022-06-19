@@ -134,3 +134,7 @@ message2.txt
 # my todo list
 todo.md
 test.js
+
+#Do I really need to say why?
+.vscode
+database.db
