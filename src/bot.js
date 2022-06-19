@@ -120,12 +120,12 @@ async function startOfDay (){
         content: `<@&${pingRoleId}>\nA new day of Club league has started.\nHave you done your club league?`,
         components: [row]
     })
-    fs.writeFileSync('../message.txt', message.id)
+    fs.writeFileSync('./message.txt', message.id)
 }
 async function oneHourBefore (){
     const channel = await client.channels.fetch(pingChannelId)
     const message = await channel.send(`<@&${pingRoleId}>\n1 hour remains of club league.\nHave you done your club league?`)
-    fs.writeFileSync('../message2.txt', message.id)
+    fs.writeFileSync('./message2.txt', message.id)
 }
 async function endOfDay (){
     let notDoneMembers = []

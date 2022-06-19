@@ -28,7 +28,7 @@ module.exports = {
             content: `<@&${pingRoleId}>\nA new day of Club league has started.\nHave you done your club league?`,
             components: [row]
         })
-        fs.writeFileSync('../../../message.txt', message.id)
+        fs.writeFileSync('./message.txt', message.id)
         interaction.editReply("I sent the message to the channel you specified")
     }
 }
