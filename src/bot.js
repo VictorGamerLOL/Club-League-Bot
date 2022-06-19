@@ -130,7 +130,6 @@ async function oneHourBefore (){
 async function endOfDay (){
     const guild = await client.guilds.fetch(guildId)
     const channel = await client.channels.fetch(pingChannelId)
-    const logChannel = await client.channels.fetch(logChannelId)
     const members = await guild.members.fetch()
     for (let member of members) {
         if (member[1].roles.cache.has(pingRoleId)) { //Do not ask me why it starts at array index 1 for I do not know why :<
