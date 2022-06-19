@@ -32,20 +32,34 @@ for (const folder of commandFolders) {
 	}
 }
 
+const eventFiles = fs.readdirSync(path.join(__dirname, './events')).filter(file => file.endsWith('.js')); // same with commands but event handling
+
+for (const file of eventFiles) {
+	const event = require(path.join(__dirname, `./events/${file}`)); // import js file no categories
+	if (event.once) {
+		client.once(event.name, (...args) => event.execute(...args, client));
+	} else {
+		client.on(event.name, (...args) => event.execute(...args, client));
+	}
+}
+
 const rulesStart = new schedule.RecurrenceRule()
 rulesStart.dayOfWeek = [0, 3, 5]
 rulesStart.hour = 14
 rulesStart.minute = 0
+rulesStart.tz = "Etc/UTC"
 
 const rules1HourBefore = new schedule.RecurrenceRule()
 rules1HourBefore.dayOfWeek = [1, 4, 6]
 rules1HourBefore.hour = 13
 rules1HourBefore.minute = 0
+rules1HourBefore.tz = "Etc/UTC"
 
 const rulesEnd = new schedule.RecurrenceRule()
 rulesEnd.dayOfWeek = [1, 4, 6]
 rulesEnd.hour = 14
 rulesEnd.minute = 0
+rulesEnd.tz = "Etc/UTC"
 
 async function putCommands () {
 	try {

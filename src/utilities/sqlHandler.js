@@ -82,7 +82,7 @@ const SQLHandler = {
         return team[0]
     },
     fetchteammembers: async (teamname) => {
-        const members = await database.query(`SELECT user1, user2, user3 FROM teams WHERE team=?`, [teamname])
+        const members = await database.query(`SELECT user1, user2, user3 FROM teams WHERE name=?`, [teamname])
         return members[0]
     },
     maketeam: async (teamName, roleid) => {
@@ -96,6 +96,16 @@ const SQLHandler = {
     resetteam: async (teamName) => {
         if (teamName == "No Team") return
         await database.execute(`UPDATE teams SET user1="Nobody", user2="Nobody", user3="Nobody" WHERE name="${teamName}"`)
+        await database.execute(`UPDATE users SET team="No Team" WHERE team="${teamName}"`)
+    },
+    delmember: async (member) => {
+        await database.execute(`DELETE FROM users WHERE id=?`, [member])
+    },
+    addmember: async (member) => {
+        await database.execute(`INSERT INTO users (id) VALUES (?)`, [member])
+    },
+    delteam: async (teamName) => {
+        await database.execute(`DELETE FROM teams WHERE name="${teamName}"`)
         await database.execute(`UPDATE users SET team="No Team" WHERE team="${teamName}"`)
     }
 }
