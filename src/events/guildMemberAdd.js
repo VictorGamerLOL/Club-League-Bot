@@ -3,7 +3,7 @@ const { guildId, token, clientId, pingRoleId, pingChannelId, logChannelId } = re
 const sql = require('../utilities/sqlHandler')
 
 module.exports ={
-    name: "guildMemberRemove",
+    name: "guildMemberAdd",
     once: false,
     async execute(GuildMember) {
         sql.addmember(GuildMember.id)
