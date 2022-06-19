@@ -56,7 +56,6 @@ const SQLHandler = {
             FOREIGN KEY (team) REFERENCES teams(name) ON DELETE SET DEFAULT
         )`)
         await database.execute(`INSERT INTO users (id) VALUES ("Nobody")`)
-        await database.execute(`PRAGMA foreign_keys = ON`)
     },
     regentables: async (membersList) => {
         await database.execute(`PRAGMA foreign_keys = OFF`)
@@ -66,9 +65,8 @@ const SQLHandler = {
             query += `('${member}'), `
         }
         query = query.slice(0, -2)
-        console.log(query)
         await database.execute(query, [])
-        await database.execute(`PRAGMA foreign_keys = ON`)
+        await database.execute(`UPDATE teams SET user1="Nobody", user2="Nobody", user3="Nobody" WHERE NOT name="No Team"`)
     },
     fetchteams: async () => {
         const teams = await database.query(`SELECT * FROM teams`, [])
@@ -78,14 +76,25 @@ const SQLHandler = {
         const team = await database.query(`SELECT * FROM teams WHERE name=?`, [teamname])
         return team[0]
     },
+    fetchmemberteam: async (member) => {
+        const memberteamname = await database.query(`SELECT team FROM users WHERE id=?`, [member])
+        const team = await database.query(`SELECT * FROM teams WHERE name=?`, [memberteamname[0].team])
+        return team[0]
+    },
+    fetchteammembers: async (teamname) => {
+        const members = await database.query(`SELECT user1, user2, user3 FROM teams WHERE team=?`, [teamname])
+        return members[0]
+    },
     maketeam: async (teamName, roleid) => {
         await database.execute(`INSERT INTO teams (name, roleid) VALUES ("${teamName}", "${roleid}")`)
     },
     setteam: async (userIds, teamName) => {
-        await database.execute(`UPDATE teams SET user1="${userIds[0]}", user2="${userIds[1]}", user3="${userIds[2]}" WHERE name="${teamName}"`)
         await database.execute(`UPDATE users SET team="${teamName}" WHERE id="${userIds[0]}" OR id="${userIds[1]}" OR id="${userIds[2]}"`)
+        if (teamName == "No Team") return
+        await database.execute(`UPDATE teams SET user1="${userIds[0]}", user2="${userIds[1]}", user3="${userIds[2]}" WHERE name="${teamName}"`)
     },
     resetteam: async (teamName) => {
+        if (teamName == "No Team") return
         await database.execute(`UPDATE teams SET user1="Nobody", user2="Nobody", user3="Nobody" WHERE name="${teamName}"`)
         await database.execute(`UPDATE users SET team="No Team" WHERE team="${teamName}"`)
     }

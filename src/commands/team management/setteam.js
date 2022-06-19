@@ -4,24 +4,24 @@ const sql = require('../../utilities/sqlHandler');
 
 module.exports = {
     name: 'setteam',
-    description: 'Assign 3 members to a team.',
+    description: 'Assign 3 members to a teamname.',
     slashBuilder () {
         const command = new Discord.SlashCommandBuilder()
             .setName('setteam')
-            .setDescription('Assign 3 members to a team.')
+            .setDescription('Assign 3 members to a teamname.')
             .addUserOption(option =>
                 option.setName('member1')
-                    .setDescription('The first member of the team.')
+                    .setDescription('The first member of the teamname.')
                     .setRequired(true)
             )
             .addUserOption(option =>
                 option.setName('member2')
-                    .setDescription('The second member of the team.')
+                    .setDescription('The second member of the teamname.')
                     .setRequired(true)
             )
             .addUserOption(option =>
                 option.setName('member3')
-                    .setDescription('The third member of the team.')
+                    .setDescription('The third member of the teamname.')
                     .setRequired(true)
             )
         return command.toJSON()
@@ -33,8 +33,8 @@ module.exports = {
         member3 = await interaction.options.getUser('member3')
         timeSeed = Date.now()
         let teams = []
-        for (let team of await sql.fetchteams()) {
-            teams.push(team.name)
+        for (let teamname of await sql.fetchteams()) {
+            teams.push(teamname.name)
         }
         const teamSelect = new Discord.SelectMenuBuilder()
             .setCustomId(`${timeSeed}teamSelect`)
@@ -45,13 +45,13 @@ module.exports = {
             let option = new Discord.UnsafeSelectMenuOptionBuilder()
                 .setLabel(teamname)
                 .setValue(teamname)
-                .setEmoji('🏁')
+                .setEmoji('⚫')
             teamSelect.addOptions(option.toJSON())
         }
         const actionRow = new Discord.ActionRowBuilder()
             .addComponents([teamSelect])
         await interaction.editReply({
-            content: "Select the team for the 3 members.",
+            content: "Select the teamname for the 3 members.",
         })
         message = await interaction.channel.send({
             content: "​", //Disregard the invisible character
@@ -63,18 +63,41 @@ module.exports = {
         }
         let miniraction = await message.awaitMessageComponent({filter, time: 15000})
         await miniraction.deferReply()
-        let team = miniraction.values[0]
-        await sql.resetteam(team)
-        await sql.setteam([member1.id, member2.id, member3.id], team)
-        const teamrecord = await sql.fetchteam(team)
-        const role = teamrecord.roleid
-        let guild = await interaction.client.guilds.fetch(guildId)
+
+        const guild = await interaction.client.guilds.fetch(guildId)
+
+        const resetteam = async (teamObject) => {
+            if (teamObject.name == "No Team") return
+            if (teamObject.user1 == "Nobody" || teamObject.user2 == "Nobody" || teamObject.user3 == "Nobody") return
+            let user1 = await guild.members.fetch(teamObject.user1)
+            let user2 = await guild.members.fetch(teamObject.user2)
+            let user3 = await guild.members.fetch(teamObject.user3)
+            await user1.roles.remove(teamObject.roleid)
+            await user2.roles.remove(teamObject.roleid)
+            await user3.roles.remove(teamObject.roleid)
+            await sql.resetteam(teamObject.name)
+        }
+
+        const teamname = miniraction.values[0]
         member1 = await guild.members.fetch(member1.id)
         member2 = await guild.members.fetch(member2.id)
         member3 = await guild.members.fetch(member3.id)
-        member1.roles.add(role)
-        member2.roles.add(role)
-        member3.roles.add(role)
-        await miniraction.editReply(`The members have been assigned to ${team}`)
+        let teamforreset1 = await sql.fetchmemberteam(member1.id)
+        resetteam(teamforreset1)
+        let teamforreset2 = await sql.fetchmemberteam(member2.id)
+        resetteam(teamforreset2)
+        let teamforreset3 = await sql.fetchmemberteam(member3.id)
+        resetteam(teamforreset3)
+        let teamforreset4 = await sql.fetchteam(teamname)
+        resetteam(teamforreset4)
+
+        const team = await sql.fetchteam(teamname)
+        if (team.name != "No Team") {
+            await member1.roles.add(team.roleid)
+            await member2.roles.add(team.roleid)
+            await member3.roles.add(team.roleid)
+        }
+        await sql.setteam([member1.id, member2.id, member3.id], teamname)
+        miniraction.editReply(`I have assigned the 3 members to the team ${teamname}.`)
     }
 }
