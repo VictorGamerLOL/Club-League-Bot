@@ -5,7 +5,8 @@ const { REST }= require('@discordjs/rest')
 const { Routes } = require('discord-api-types/v9');
 const fs = require('fs')
 const sql = require('./utilities/sqlHandler.js')
-const path = require('path')
+const path = require('path');
+const { permissionRequirements } = require('./commands/team management/setteam');
 const myIntents = []
 myIntents.push(Discord.GatewayIntentBits.Guilds)
 myIntents.push(Discord.GatewayIntentBits.GuildMembers)
@@ -146,11 +147,12 @@ async function endOfDay (){
 client.on('interactionCreate', async function(interaction) {
     if (interaction.type == Discord.InteractionType.ApplicationCommand) {
         const command = client.commands.get(interaction.commandName)
-	if (!command.permissionRequirements == undefined) {
+	if (command.permissionRequirements != undefined) {
+        console.log(!interaction.member.permissions.has(command.permissionRequirements))
 		if (!interaction.member.permissions.has(command.permissionRequirements)) {
-            	interaction.reply("You are not allowed to use this command")
-            	return
-        	}
+            await interaction.reply("You are not allowed to use this command")
+            return
+        }
 	}
         
         if (!command) return

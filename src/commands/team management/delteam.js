@@ -48,7 +48,7 @@ module.exports = {
             return false
         }
         try {
-            let miniraction = await message.awaitMessageComponent({filter, time: 15000})
+            var miniraction = await message.awaitMessageComponent({filter, time: 15000})
         } catch {
             await message.edit({
                 content: "Timed out",
