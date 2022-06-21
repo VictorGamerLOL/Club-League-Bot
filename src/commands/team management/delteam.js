@@ -1,12 +1,13 @@
 //The usual imports
 const Discord = require('discord.js')
-const { guildId, token, clientId, pingRoleId, pingChannelId, logChannelId } = require('../../../config.json')
+const { guildId, token, clientId, pingRoleId, pingChannelId} = require('../../../config.json')
 const sql = require('../../utilities/sqlHandler')
 
 //The module.exports
 module.exports = {
     name: 'delteam',
     description: 'Delete a team.',
+    permissionRequirements: ['ManageGuild'],
     slashBuilder () {
         const command = new Discord.SlashCommandBuilder()
             .setName('delteam')
@@ -46,7 +47,16 @@ module.exports = {
             if (interactionn.customId === `${timeSeed}teamSelect` && interactionn.member.id == interaction.member.id) return true
             return false
         }
-        let miniraction = await message.awaitMessageComponent({filter, time: 15000})
+        try {
+            let miniraction = await message.awaitMessageComponent({filter, time: 15000})
+        } catch {
+            await message.edit({
+                content: "Timed out",
+                components: []
+            })
+            interaction.deleteReply()
+            return
+        }
         await miniraction.deferReply()
         const teamname = miniraction.values[0]
         let team = await sql.fetchteam(teamname)

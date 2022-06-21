@@ -1,10 +1,11 @@
 const Discord = require('discord.js');
 const fs = require('fs');
-const {guildId, token, clientId, pingRoleId, pingChannelId, logChannelId} = require('../../../config.json')
+const {guildId, token, clientId, pingRoleId, pingChannelId} = require('../../../config.json')
 
 module.exports = {
     name: 'send',
     description: 'Send the message with the buttons to the ping channel.',
+    permissionRequirements: ['ManageGuild'],
     slashBuilder () {
         const command = new Discord.SlashCommandBuilder()
             .setName('send')

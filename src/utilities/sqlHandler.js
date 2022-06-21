@@ -107,6 +107,10 @@ const SQLHandler = {
     delteam: async (teamName) => {
         await database.execute(`DELETE FROM teams WHERE name="${teamName}"`)
         await database.execute(`UPDATE users SET team="No Team" WHERE team="${teamName}"`)
+    },
+    listteams: async () => {
+        const teams = await database.query(`SELECT * FROM teams WHERE NOT name="No Team"`, [])
+        return teams
     }
 }
 

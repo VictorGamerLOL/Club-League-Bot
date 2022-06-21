@@ -1,10 +1,11 @@
 const Discord = require('discord.js')
-const { guildId, token, clientId, pingRoleId, pingChannelId, logChannelId } = require('../../../config.json');
+const { guildId, token, clientId, pingRoleId, pingChannelId} = require('../../../config.json');
 const sql = require('../../utilities/sqlHandler');
 
 module.exports = {
     name: 'setteam',
     description: 'Assign 3 members to a teamname.',
+    permissionRequirements: ['ManageGuild'],
     slashBuilder () {
         const command = new Discord.SlashCommandBuilder()
             .setName('setteam')
@@ -61,7 +62,16 @@ module.exports = {
             if (interactionn.customId === `${timeSeed}teamSelect` && interactionn.member.id == interaction.member.id) return true
             return false
         }
-        let miniraction = await message.awaitMessageComponent({filter, time: 15000})
+        try {
+            let miniraction = await message.awaitMessageComponent({filter, time: 15000})
+        } catch {
+            await message.edit({
+                content: "Timed out",
+                components: []
+            })
+            interaction.deleteReply()
+            return
+        }
         await miniraction.deferReply()
 
         const guild = await interaction.client.guilds.fetch(guildId)

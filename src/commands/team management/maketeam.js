@@ -1,11 +1,12 @@
 const Discord = require('discord.js');
-const { guildId, token, clientId, pingRoleId, pingChannelId, logChannelId } = require('../../../config.json');
+const { guildId, token, clientId, pingRoleId, pingChannelId} = require('../../../config.json');
 const sql = require('../../utilities/sqlHandler');
 
 //module.exports
 module.exports = {
     name: 'maketeam',
     description: 'Make a team.',
+    permissionRequirements: ['ManageGuild'],
     slashBuilder () {
         const command = new Discord.SlashCommandBuilder()
             .setName('maketeam')

@@ -1,9 +1,10 @@
 const Discord = require('discord.js');
-const {guildId, token, clientId, pingRoleId, pingChannelId, logChannelId} = require('../../../config.json')
+const {guildId, token, clientId, pingRoleId, pingChannelId} = require('../../../config.json')
 
 module.exports = {
     name: 'takerole',
     description: 'Take away the club notification role from everyone on the server.',
+    permissionRequirements: ['ManageGuild'],
     slashBuilder () {
         const command = new Discord.SlashCommandBuilder()
             .setName('takerole')

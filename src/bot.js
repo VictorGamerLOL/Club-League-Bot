@@ -145,11 +145,11 @@ async function endOfDay (){
 
 client.on('interactionCreate', async function(interaction) {
     if (interaction.type == Discord.InteractionType.ApplicationCommand) {
-        if (!interaction.member.permissions.has('ADMINISTRATOR')) {
+        const command = client.commands.get(interaction.commandName) 
+        if (!interaction.member.permissions.has(command.permissionRequirements)) {
             interaction.reply("You are not allowed to use this command")
             return
         }
-        const command = client.commands.get(interaction.commandName) 
         if (!command) return
         command.execute(interaction)
     }
