@@ -1,6 +1,6 @@
 const Discord = require('discord.js')
 const schedule = require('node-schedule')
-const {guildId, token, clientId, pingRoleId, pingChannelId, logChannelId} = require('../config.json')
+const {guildId, token, clientId, pingRoleId, pingChannelId} = require('../config.json')
 const { REST }= require('@discordjs/rest')
 const { Routes } = require('discord-api-types/v9');
 const fs = require('fs')
