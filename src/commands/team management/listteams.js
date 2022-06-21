@@ -18,7 +18,7 @@ module.exports = {
             .setTitle('Teams')
             .setDescription("Here's a list of all teams and their members.")
         for (let team of teams) {
-            if (team.user1 != "Nobody" || team.user2 != "Nobody" || !team.user3 != "Nobody") {
+            if (team.user1 != "Nobody" || team.user2 != "Nobody" || team.user3 != "Nobody") {
                 var member1 = await interaction.guild.members.fetch(team.user1)
                 var member2 = await interaction.guild.members.fetch(team.user2)
                 var member3 = await interaction.guild.members.fetch(team.user3)
