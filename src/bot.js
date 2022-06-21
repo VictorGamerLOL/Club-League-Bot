@@ -148,7 +148,6 @@ client.on('interactionCreate', async function(interaction) {
     if (interaction.type == Discord.InteractionType.ApplicationCommand) {
         const command = client.commands.get(interaction.commandName)
 	if (command.permissionRequirements != undefined) {
-        console.log(!interaction.member.permissions.has(command.permissionRequirements))
 		if (!interaction.member.permissions.has(command.permissionRequirements)) {
             await interaction.reply("You are not allowed to use this command")
             return
