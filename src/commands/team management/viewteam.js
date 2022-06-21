@@ -61,7 +61,7 @@ module.exports = {
         await miniraction.deferReply()
         const teamname = miniraction.values[0]
         let team = await sql.fetchteam(teamname)
-        if (!team.user1 == "Nobody" || !team.user2 == "Nobody" || !team.user3 == "Nobody") {
+        if (team.user1 != "Nobody" || team.user2 != "Nobody" || team.user3 != "Nobody") {
             var member1 = await interaction.guild.members.fetch(team.user1)
             var member2 = await interaction.guild.members.fetch(team.user2)
             var member3 = await interaction.guild.members.fetch(team.user3)

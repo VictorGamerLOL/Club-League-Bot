@@ -93,13 +93,13 @@ module.exports = {
         member2 = await guild.members.fetch(member2.id)
         member3 = await guild.members.fetch(member3.id)
         let teamforreset1 = await sql.fetchmemberteam(member1.id)
-        resetteam(teamforreset1)
+        await resetteam(teamforreset1)
         let teamforreset2 = await sql.fetchmemberteam(member2.id)
-        resetteam(teamforreset2)
+        await resetteam(teamforreset2)
         let teamforreset3 = await sql.fetchmemberteam(member3.id)
-        resetteam(teamforreset3)
+        await resetteam(teamforreset3)
         let teamforreset4 = await sql.fetchteam(teamname)
-        resetteam(teamforreset4)
+        await resetteam(teamforreset4)
 
         const team = await sql.fetchteam(teamname)
         if (team.name != "No Team") {

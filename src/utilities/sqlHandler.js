@@ -73,12 +73,13 @@ const SQLHandler = {
         return teams
     },
     fetchteam: async (teamname) => {
-        const team = await database.query(`SELECT * FROM teams WHERE name=?`, [teamname])
+        const team = await database.query(`SELECT * FROM teams WHERE name='${teamname}'`)
         return team[0]
     },
     fetchmemberteam: async (member) => {
         const memberteamname = await database.query(`SELECT team FROM users WHERE id=?`, [member])
-        const team = await database.query(`SELECT * FROM teams WHERE name=?`, [memberteamname[0].team])
+        console.log(memberteamname[0])
+        const team = await database.query(`SELECT * FROM teams WHERE name='${memberteamname[0].team}'`)
         return team[0]
     },
     fetchteammembers: async (teamname) => {
