@@ -137,9 +137,9 @@ async function endOfDay (){
             await member[1].roles.remove(pingRoleId)
         }
     }
-    const message = await channel.messages.fetch(fs.readFileSync('../message.txt', 'utf8'))
+    const message = await channel.messages.fetch(fs.readFileSync('./message.txt', 'utf8'))
     message.delete()
-    const message2 = await channel.messages.fetch(fs.readFileSync('../message2.txt', 'utf8'))
+    const message2 = await channel.messages.fetch(fs.readFileSync('./message2.txt', 'utf8'))
     message2.delete()
 
 }
