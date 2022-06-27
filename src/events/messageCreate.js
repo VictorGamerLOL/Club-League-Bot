@@ -9,6 +9,7 @@ module.exports ={
         const azuma = new RegExp('azuma*', 'i')
         if (azuma.test(message.content)) {
             message.channel.send("Sussy baka")
+            message.react("980106629011877910")
         }
     }
 }
