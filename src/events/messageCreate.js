@@ -7,9 +7,13 @@ module.exports ={
     once: false,
     async execute(message) {
         const azuma = new RegExp('azuma*', 'i')
+        const victor = new RegExp('victor*', 'i')
         if (azuma.test(message.content)) {
             message.channel.send("Sussy baka")
             message.react("980106629011877910")
+        }
+        if (victor.test(message.content)) {
+            message.react("991083268671692810")
         }
     }
 }
