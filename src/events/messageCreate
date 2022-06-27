@@ -6,7 +6,8 @@ module.exports ={
     name: "messageCreate",
     once: false,
     async execute(message) {
-        if (message.content.test(/azuma/g) {
+        const azuma = new RegExp('azuma*')
+        if (azuma.test(message.content)) {
             message.channel.send("Azuma. Who is he exactly? Someone that simply gets angry over trivial things?")
         }
     }
