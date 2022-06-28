@@ -6,7 +6,9 @@ module.exports ={
     name: "guildMemberRemove",
     once: false,
     async execute(GuildMember) {
+        const guild = GuildMember.guild
         const resetteam = async (teamObject) => {
+            console.log(teamObject)
             if (teamObject.name == "No Team") return
             if (teamObject.user1 == "Nobody" || teamObject.user2 == "Nobody" || teamObject.user3 == "Nobody") return
             if (GuildMember.id != teamObject.user1) {
@@ -24,8 +26,8 @@ module.exports ={
             
             await sql.resetteam(teamObject.name)
         }
-        let teamforreset = await sql.fetchteam(GuildMember.id)
-        resetteam(teamforreset)
+        let teamforreset = await sql.fetchmemberteam(GuildMember.id)
+        await resetteam(teamforreset)
         await sql.delmember(GuildMember.id)
     }
 }
