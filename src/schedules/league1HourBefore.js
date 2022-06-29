@@ -16,8 +16,8 @@ module.exports = {
         rules.tz = "Etc/UTC"
         return rules
     },
-    async execute(client) {
-        const channel = await client.channels.fetch(pingChannelId)
+    async execute() {
+        const channel = await this.client.channels.fetch(pingChannelId)
         const message = await channel.send(`<@&${pingRoleId}>\n1 hour remains of club league.\nHave you done your club league?`)
         fs.writeFileSync('./message2.txt', message.id)
     }

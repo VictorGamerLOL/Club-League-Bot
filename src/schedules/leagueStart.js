@@ -16,9 +16,9 @@ module.exports = {
         rules.tz = "Etc/UTC"
         return rules
     },
-    async execute(client) {
-        const guild = await client.guilds.fetch(guildId)
-        const channel = await client.channels.fetch(pingChannelId)
+    async execute() {
+        const guild = await this.client.guilds.fetch(guildId)
+        const channel = await this.client.channels.fetch(pingChannelId)
         const members = await guild.members.fetch()
         for (let member of members) {
             if (!member[1].roles.cache.has(pingRoleId)) { //Do not ask me why it starts at array index 1 for I do not know why :<

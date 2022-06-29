@@ -18,6 +18,7 @@ myIntents.push(Discord.GatewayIntentBits.MessageContent)
 const rest = new REST({ version: '9' }).setToken(token);
 
 const client = new Discord.Client({intents: myIntents,partials: [Discord.Partials.Message, Discord.Partials.Channel, Discord.Partials.Reaction, Discord.Partials.GuildMember]}); //Init Discord Client Instance
+const clientObj = {client: client}
 
 client.commands = new Discord.Collection();
 const commandFolders = fs.readdirSync(path.join(__dirname, './commands')); //Get folder of commands and sync with fs
@@ -47,7 +48,7 @@ const scheduleFiles = fs.readdirSync(path.join(__dirname, './schedules')).filter
 
 for (const file of scheduleFiles) {
     const scheduleFile = require(path.join(__dirname, `./schedules/${file}`));
-    schedule.scheduleJob(scheduleFile.jobSchedule(), scheduleFile.execute);
+    schedule.scheduleJob(scheduleFile.jobSchedule(), scheduleFile.execute.bind(clientObj));
 }
 
 async function putCommands () {
