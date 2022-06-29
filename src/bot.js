@@ -6,7 +6,6 @@ const { Routes } = require('discord-api-types/v9');
 const fs = require('fs')
 const sql = require('./utilities/sqlHandler.js')
 const path = require('path');
-const { permissionRequirements } = require('./commands/team management/setteam');
 const myIntents = []
 myIntents.push(Discord.GatewayIntentBits.Guilds)
 myIntents.push(Discord.GatewayIntentBits.GuildMembers)
@@ -44,23 +43,12 @@ for (const file of eventFiles) {
 	}
 }
 
-const rulesStart = new schedule.RecurrenceRule()
-rulesStart.dayOfWeek = [0, 3, 5]
-rulesStart.hour = 14
-rulesStart.minute = 0
-rulesStart.tz = "Etc/UTC"
+const scheduleFiles = fs.readdirSync(path.join(__dirname, './schedules')).filter(file => file.endsWith('.js')); // same with commands but schedule handling
 
-const rules1HourBefore = new schedule.RecurrenceRule()
-rules1HourBefore.dayOfWeek = [1, 4, 6]
-rules1HourBefore.hour = 13
-rules1HourBefore.minute = 0
-rules1HourBefore.tz = "Etc/UTC"
-
-const rulesEnd = new schedule.RecurrenceRule()
-rulesEnd.dayOfWeek = [1, 4, 6]
-rulesEnd.hour = 14
-rulesEnd.minute = 0
-rulesEnd.tz = "Etc/UTC"
+for (const file of scheduleFiles) {
+    const scheduleFile = require(path.join(__dirname, `./schedules/${file}`));
+    schedule.scheduleJob(scheduleFile.jobSchedule(), scheduleFile.execute);
+}
 
 async function putCommands () {
 	try {
@@ -98,51 +86,6 @@ async function buttonNo (interaction) {
     interaction.editReply("You have gained the club league notification role")
     return
 }
-async function startOfDay (){
-    const guild = await client.guilds.fetch(guildId)
-    const channel = await client.channels.fetch(pingChannelId)
-    const members = await guild.members.fetch()
-    for (let member of members) {
-        if (!member[1].roles.cache.has(pingRoleId)) { //Do not ask me why it starts at array index 1 for I do not know why :<
-            await member[1].roles.add(pingRoleId)
-        }
-    }
-    let yes = new Discord.ButtonBuilder()
-        .setCustomId("yes")
-        .setLabel("Yes")
-        .setStyle(Discord.ButtonStyle.Success)
-    let no = new Discord.ButtonBuilder()
-        .setCustomId("no")
-        .setLabel("No")
-        .setStyle(Discord.ButtonStyle.Danger)
-    let row = new Discord.ActionRowBuilder()
-        .addComponents([yes, no])
-    const message = await channel.send({
-        content: `<@&${pingRoleId}>\nA new day of Club league has started.\nHave you done your club league?`,
-        components: [row]
-    })
-    fs.writeFileSync('./message.txt', message.id)
-}
-async function oneHourBefore (){
-    const channel = await client.channels.fetch(pingChannelId)
-    const message = await channel.send(`<@&${pingRoleId}>\n1 hour remains of club league.\nHave you done your club league?`)
-    fs.writeFileSync('./message2.txt', message.id)
-}
-async function endOfDay (){
-    const guild = await client.guilds.fetch(guildId)
-    const channel = await client.channels.fetch(pingChannelId)
-    const members = await guild.members.fetch()
-    for (let member of members) {
-        if (member[1].roles.cache.has(pingRoleId)) { //Do not ask me why it starts at array index 1 for I do not know why :<
-            await member[1].roles.remove(pingRoleId)
-        }
-    }
-    const message = await channel.messages.fetch(fs.readFileSync('./message.txt', 'utf8'))
-    message.delete()
-    const message2 = await channel.messages.fetch(fs.readFileSync('./message2.txt', 'utf8'))
-    message2.delete()
-
-}
 
 client.on('interactionCreate', async function(interaction) {
     if (interaction.type == Discord.InteractionType.ApplicationCommand) {
@@ -167,7 +110,4 @@ client.on('interactionCreate', async function(interaction) {
 })
 client.login(token)
 
-const jobStart = schedule.scheduleJob(rulesStart, startOfDay)
-const jobOneHourBefore = schedule.scheduleJob(rules1HourBefore, oneHourBefore)
-const jobEnd = schedule.scheduleJob(rulesEnd, endOfDay)
 sql.init()
