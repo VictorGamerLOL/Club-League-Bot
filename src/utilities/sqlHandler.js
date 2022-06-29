@@ -56,6 +56,11 @@ const SQLHandler = {
             FOREIGN KEY (team) REFERENCES teams(name) ON DELETE SET DEFAULT
         )`)
         await database.execute(`INSERT INTO users (id) VALUES ("Nobody")`)
+        await database.execute(`CREATE TABLE IF NOT EXISTS states (
+            name TEXT PRIMARY KEY NOT NULL,
+            value TEXT NOT NULL
+        )`)
+        await database.execute(`INSERT INTO states (name, value) VALUES ("weekType", "league")`)
     },
     regentables: async (membersList) => {
         await database.execute(`PRAGMA foreign_keys = OFF`)
