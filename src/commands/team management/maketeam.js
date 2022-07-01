@@ -20,14 +20,14 @@ module.exports = {
                 option.setName('role')
                     .setDescription('The role of the team.')
                     .setRequired(true)
-            )
+            );
         return command.toJSON()
     },
     async execute (interaction) {
-        await interaction.deferReply()
-        teamname = await interaction.options.getString('teamname')
-        role = await interaction.options.getRole('role')
-        sql.maketeam(teamname, role.id)
-        interaction.editReply("I have made the team.")
+        await interaction.deferReply();
+        teamname = await interaction.options.getString('teamname');
+        role = await interaction.options.getRole('role');
+        sql.maketeam(teamname, role.id);
+        interaction.editReply("I have made the team.");
     }
 }
