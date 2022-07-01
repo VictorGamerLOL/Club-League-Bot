@@ -1,11 +1,5 @@
 const Discord = require("discord.js");
-const {
-  guildId,
-  token,
-  clientId,
-  pingRoleId,
-  pingChannelId,
-} = require("../../../config.json");
+const { guildId } = require("../../../config.json");
 const sql = require("../../utilities/sqlHandler");
 
 module.exports = {

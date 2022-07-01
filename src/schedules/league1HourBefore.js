@@ -1,9 +1,5 @@
-const Discord = require("discord.js");
 const schedule = require("node-schedule");
 const {
-  guildId,
-  token,
-  clientId,
   pingRoleId,
   pingChannelId,
 } = require("../../config.json");

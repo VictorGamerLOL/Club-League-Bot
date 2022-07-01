@@ -1,11 +1,5 @@
 const Discord = require("discord.js");
-const {
-  guildId,
-  token,
-  clientId,
-  pingRoleId,
-  pingChannelId,
-} = require("../../../config.json");
+const { guildId, pingRoleId } = require("../../../config.json");
 
 module.exports = {
   name: "takerole",

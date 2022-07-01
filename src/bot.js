@@ -5,7 +5,6 @@ const {
   token,
   clientId,
   pingRoleId,
-  pingChannelId,
 } = require("../config.json");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
@@ -13,7 +12,6 @@ const fs = require("fs");
 const sql = require("./utilities/sqlHandler.js");
 const path = require("path");
 const myIntents = [];
-//Add semicolons for me
 myIntents.push(Discord.GatewayIntentBits.Guilds);
 myIntents.push(Discord.GatewayIntentBits.GuildMembers);
 myIntents.push(Discord.GatewayIntentBits.GuildPresences);
