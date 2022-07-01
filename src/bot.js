@@ -30,7 +30,7 @@ const client = new Discord.Client({
     Discord.Partials.Reaction,
     Discord.Partials.GuildMember,
   ],
-}); //Init Discord Client Instance
+}); 
 const clientObj = { client: client };
 
 client.commands = new Discord.Collection();
