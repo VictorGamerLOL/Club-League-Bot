@@ -32,7 +32,7 @@ const client = new Discord.Client({
 });
 
 logger.info("Client made");
-logger.info("Registering commands...")
+logger.info("Registering commands...");
 
 client.commands = new Discord.Collection();
 const commandFolders = fs.readdirSync(path.join(__dirname, "./commands")); //Get folder of commands and sync with fs
@@ -54,7 +54,7 @@ for (const folder of commandFolders) {
 }
 
 logger.info("Registered commands");
-logger.info("Registering events...")
+logger.info("Registering events...");
 
 const eventFiles = fs
   .readdirSync(path.join(__dirname, "./events"))
@@ -72,7 +72,7 @@ for (const file of eventFiles) {
 }
 
 logger.info("Registered events");
-logger.info("Scheduling jobs...")
+logger.info("Scheduling jobs...");
 
 const scheduleFiles = fs
   .readdirSync(path.join(__dirname, "./schedules"))
@@ -85,7 +85,7 @@ async function scheduler() {
     if (scheduleFile.type != state) continue;
     schedule.scheduleJob(
       scheduleFile.jobSchedule(),
-      scheduleFile.execute.bind({client: client})
+      scheduleFile.execute.bind({ client: client })
     );
     logger.info(`Scheduled ${scheduleFile.type} job:`, scheduleFile.name);
   }
@@ -188,7 +188,7 @@ const weekToggle = async () => {
     schedule.scheduleJob(weekToggleJob, weekToggle);
     logger.info("Successfully changed week type to 'league'");
   }
-}
+};
 
 schedule.scheduleJob(weekToggleJob, weekToggle);
 logger.info("Week toggler job started");

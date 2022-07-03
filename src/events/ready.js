@@ -5,5 +5,5 @@ module.exports = {
   once: true,
   async execute() {
     logger.info("Bot is ready");
-  }
-}
+  },
+};
