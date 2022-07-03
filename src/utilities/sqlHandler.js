@@ -1,12 +1,13 @@
 const db = require("sqlite3");
+const logger = require("./logger");
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 let database = new db.Database("./database.db", (err) => {
   if (err) {
-    console.log(err);
+    logger.error(err);
   }
-  console.log("Connected");
+  logger.info("Connected to SQLite database");
 });
 
 database.query = function (sql, params) {

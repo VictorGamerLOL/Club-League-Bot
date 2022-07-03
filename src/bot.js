@@ -1,11 +1,7 @@
 const Discord = require("discord.js");
+const logger = require("./utilities/logger");
 const schedule = require("node-schedule");
-const {
-  guildId,
-  token,
-  clientId,
-  pingRoleId,
-} = require("../config.json");
+const { guildId, token, clientId, pingRoleId } = require("../config.json");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 const fs = require("fs");
@@ -22,6 +18,9 @@ myIntents.push(Discord.GatewayIntentBits.MessageContent);
 
 const rest = new REST({ version: "9" }).setToken(token);
 
+logger.info("Starting bot...");
+logger.info("Making client...");
+
 const client = new Discord.Client({
   intents: myIntents,
   partials: [
@@ -30,8 +29,10 @@ const client = new Discord.Client({
     Discord.Partials.Reaction,
     Discord.Partials.GuildMember,
   ],
-}); 
-const clientObj = { client: client };
+});
+
+logger.info("Client made");
+logger.info("Registering commands...")
 
 client.commands = new Discord.Collection();
 const commandFolders = fs.readdirSync(path.join(__dirname, "./commands")); //Get folder of commands and sync with fs
@@ -48,8 +49,12 @@ for (const folder of commandFolders) {
     )); //import the command into bot.js from those files
     client.commands.set(command.name, command);
     commands.push(command.slashBuilder());
+    logger.info("Registered command:", command.name);
   }
 }
+
+logger.info("Registered commands");
+logger.info("Registering events...")
 
 const eventFiles = fs
   .readdirSync(path.join(__dirname, "./events"))
@@ -59,38 +64,45 @@ for (const file of eventFiles) {
   const event = require(path.join(__dirname, `./events/${file}`)); // import js file no categories
   if (event.once) {
     client.once(event.name, (...args) => event.execute(...args, client));
+    logger.info("Registered one time event:", event.name);
   } else {
     client.on(event.name, (...args) => event.execute(...args, client));
+    logger.info("Registered event:", event.name);
   }
 }
+
+logger.info("Registered events");
+logger.info("Scheduling jobs...")
 
 const scheduleFiles = fs
   .readdirSync(path.join(__dirname, "./schedules"))
   .filter((file) => file.endsWith(".js")); // same with commands but schedule handling
 
-(async function scheduler() {
+async function scheduler() {
   const state = await sql.getState("weekType");
   for (const file of scheduleFiles) {
     const scheduleFile = require(path.join(__dirname, `./schedules/${file}`));
     if (scheduleFile.type != state) continue;
     schedule.scheduleJob(
       scheduleFile.jobSchedule(),
-      scheduleFile.execute.bind(clientObj)
+      scheduleFile.execute.bind({client: client})
     );
-    console.log(`Scheduled ${scheduleFile.name}`);
+    logger.info(`Scheduled ${scheduleFile.type} job:`, scheduleFile.name);
   }
-})();
+  logger.info("Scheduled jobs");
+}
+scheduler();
 
 async function putCommands() {
   try {
-    console.log("Started refreshing application (/) commands.");
+    logger.info("Started refreshing application (/) commands.");
     await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
       body: commands,
     });
 
-    console.log("Successfully reloaded application (/) commands.");
+    logger.info("Successfully reloaded application (/) commands.");
   } catch (error) {
-    console.error(error);
+    logger.error(error);
   }
 }
 putCommands();
@@ -147,3 +159,36 @@ client.on("interactionCreate", async function (interaction) {
 client.login(token);
 
 sql.init();
+
+logger.info("Initialising week toggler job...");
+
+const weekToggleJob = new schedule.RecurrenceRule();
+weekToggleJob.dayOfWeek = 6;
+weekToggleJob.hour = 14;
+weekToggleJob.minute = 1;
+weekToggleJob.tz = "ETC/UTC";
+
+const weekToggle = async () => {
+  const state = await sql.getState("weekType");
+  if (state == "league") {
+    logger.info("Changing week type to 'quest'");
+    await sql.setState("weekType", "quest");
+    schedule.gracefulShutdown();
+    logger.info("Terminated current jobs");
+    await scheduler();
+    schedule.scheduleJob(weekToggleJob, weekToggle);
+    logger.info("Successfully changed week type to 'quest'");
+  }
+  if (state == "quest") {
+    logger.info("Changing week type to 'league'");
+    await sql.setState("weekType", "league");
+    schedule.gracefulShutdown();
+    logger.info("Terminated current jobs");
+    await scheduler();
+    schedule.scheduleJob(weekToggleJob, weekToggle);
+    logger.info("Successfully changed week type to 'league'");
+  }
+}
+
+schedule.scheduleJob(weekToggleJob, weekToggle);
+logger.info("Week toggler job started");
