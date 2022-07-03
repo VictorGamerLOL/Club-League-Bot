@@ -1,11 +1,9 @@
-const Discord = require('discord.js')
-const { guildId, token, clientId, pingRoleId, pingChannelId, logChannelId } = require('../../config.json')
-const sql = require('../utilities/sqlHandler')
+const sql = require("../utilities/sqlHandler");
 
-module.exports ={
-    name: "guildMemberAdd",
-    once: false,
-    async execute(GuildMember) {
-        sql.addmember(GuildMember.id)
-    }
-}
+module.exports = {
+  name: "guildMemberAdd",
+  once: false,
+  async execute(GuildMember) {
+    sql.addmember(GuildMember.id);
+  },
+};
