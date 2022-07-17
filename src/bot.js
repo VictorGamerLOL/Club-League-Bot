@@ -163,7 +163,7 @@ sql.init();
 logger.info("Initialising week toggler job...");
 
 const weekToggleJob = new schedule.RecurrenceRule();
-weekToggleJob.dayOfWeek = 7;
+weekToggleJob.dayOfWeek = 0;
 weekToggleJob.hour = 14;
 weekToggleJob.minute = 1;
 weekToggleJob.tz = "ETC/UTC";
