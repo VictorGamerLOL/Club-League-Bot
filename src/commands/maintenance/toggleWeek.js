@@ -27,7 +27,7 @@ module.exports = {
   async weekToggle(client) {
     const state = await sql.getState("weekType");
     const weekToggleJob = new schedule.RecurrenceRule();
-    weekToggleJob.dayOfWeek = 6;
+    weekToggleJob.dayOfWeek = 0;
     weekToggleJob.hour = 14;
     weekToggleJob.minute = 1;
     weekToggleJob.tz = "ETC/UTC";
