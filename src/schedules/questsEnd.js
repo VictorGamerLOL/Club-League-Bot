@@ -1,0 +1,34 @@
+//The usual
+const Discord = require("discord.js");
+const logger = require("../utilities/logger.js");
+const schedule = require("node-schedule");
+const fs = require("fs");
+
+module.exports = {
+  name: "questEnd",
+  description: "The job that acts at the end of club quests.",
+  type: "quest",
+  jobSchedule() {
+    const rules = new schedule.RecurrenceRule();
+    rules.dayOfWeek = 1;
+    rules.hour = 14;
+    rules.minute = 0;
+    rules.tz = "Etc/UTC";
+    return rules;
+  },
+  async execute() {
+    //This is similar to leagueEnd
+    const guild = await this.client.guilds.fetch(guildId);
+    const channel = await this.client.channels.fetch(pingChannelId);
+    const members = await guild.members.fetch();
+    for (let member of members) {
+      if (member[1].roles.cache.has(pingRoleId)) {
+        await member[1].roles.remove(pingRoleId);
+      }
+    }
+    const message = await channel.messages.fetch(
+      fs.readFileSync("./message.txt", "utf8")
+    );
+    message.delete();
+  }
+}
