@@ -1,14 +1,14 @@
 // The usual
 const Discord = require("discord.js");
-const logger = require('../utilities/logger.js');
-const schedule = require('node-schedule');
-const { guildId, pingRoleId, pingChannelId } = require('../../config.json');
-const fs = require('fs');
+const logger = require("../utilities/logger.js");
+const schedule = require("node-schedule");
+const { guildId, pingRoleId, pingChannelId } = require("../../config.json");
+const fs = require("fs");
 
 module.exports = {
-  name: 'questReminder',
-  description: 'The job that acts at the start of a club quest day.',
-  type: 'quest',
+  name: "questReminder",
+  description: "The job that acts at the start of a club quest day.",
+  type: "quest",
   jobSchedule() {
     const rules = new schedule.RecurrenceRule();
     rules.dayOfWeek = 3;
@@ -42,5 +42,5 @@ module.exports = {
     });
     logger.info(`Message sent: ${message.id}`);
     fs.writeFileSync("./message.txt", message.id);
-  }
-}
+  },
+};

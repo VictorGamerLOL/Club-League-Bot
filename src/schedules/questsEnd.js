@@ -2,6 +2,7 @@
 const Discord = require("discord.js");
 const logger = require("../utilities/logger.js");
 const schedule = require("node-schedule");
+const { guildId, pingRoleId, pingChannelId } = require("../../config.json");
 const fs = require("fs");
 
 module.exports = {
@@ -30,5 +31,5 @@ module.exports = {
       fs.readFileSync("./message.txt", "utf8")
     );
     message.delete();
-  }
-}
+  },
+};
