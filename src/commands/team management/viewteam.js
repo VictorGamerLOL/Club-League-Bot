@@ -73,9 +73,30 @@ module.exports = {
       team.user2 != "Nobody" ||
       team.user3 != "Nobody"
     ) {
-      var member1 = await interaction.guild.members.fetch(team.user1);
-      var member2 = await interaction.guild.members.fetch(team.user2);
-      var member3 = await interaction.guild.members.fetch(team.user3);
+      //The same self-fixing mechanism that was done in listteams.js
+      try {
+        var [member1, member2, member3] = await Promise.all([
+          interaction.guild.members.fetch(team.user1),
+          interaction.guild.members.fetch(team.user2),
+          interaction.guild.members.fetch(team.user3),
+        ]);
+      } catch {
+        for (let i = 1; i < 4; i++) {
+          try {
+            await interaction.guild.members.fetch(team[`user${i}`]);
+          } catch {
+            let fakeguildmember = await interaction.client.users.fetch(
+              team[`user${i}`]
+            );
+            fakeguildmember.guild = interaction.guild;
+            const guildMemberRemove = require("../../events/guildMemberRemove");
+            await guildMemberRemove.execute(fakeguildmember);
+          }
+        }
+        var member1 = { displayName: "Nobody" };
+        var member2 = { displayName: "Nobody" };
+        var member3 = { displayName: "Nobody" };
+      }
     } else {
       var member1 = { displayName: "Nobody" };
       var member2 = { displayName: "Nobody" };

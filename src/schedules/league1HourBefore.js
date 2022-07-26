@@ -1,8 +1,5 @@
 const schedule = require("node-schedule");
-const {
-  pingRoleId,
-  pingChannelId,
-} = require("../../config.json");
+const { pingRoleId, pingChannelId } = require("../../config.json");
 const fs = require("fs");
 const sql = require("../utilities/sqlHandler.js");
 

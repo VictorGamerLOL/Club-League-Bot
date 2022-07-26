@@ -32,9 +32,11 @@ module.exports = {
   },
   async execute(interaction) {
     await interaction.deferReply();
-    member1 = await interaction.options.getUser("member1");
-    member2 = await interaction.options.getUser("member2");
-    member3 = await interaction.options.getUser("member3");
+    let [member1, member2, member3] = await Promise.all([
+      interaction.options.getUser("member1"),
+      interaction.options.getUser("member2"),
+      interaction.options.getUser("member3"),
+    ]);
     timeSeed = Date.now();
     let teams = [];
     for (let teamname of await sql.fetchteams()) {
@@ -95,19 +97,25 @@ module.exports = {
         teamObject.user3 == "Nobody"
       )
         return;
-      let user1 = await guild.members.fetch(teamObject.user1);
-      let user2 = await guild.members.fetch(teamObject.user2);
-      let user3 = await guild.members.fetch(teamObject.user3);
-      await user1.roles.remove(teamObject.roleid);
-      await user2.roles.remove(teamObject.roleid);
-      await user3.roles.remove(teamObject.roleid);
+      let [user1, user2, user3] = await Promise.all([
+        guild.members.fetch(teamObject.user1),
+        guild.members.fetch(teamObject.user2),
+        guild.members.fetch(teamObject.user3),
+      ]);
+      await Promise.all([
+        user1.roles.remove(teamObject.roleid),
+        user2.roles.remove(teamObject.roleid),
+        user3.roles.remove(teamObject.roleid),
+      ]);
       await sql.resetteam(teamObject.name);
     };
 
     const teamname = miniraction.values[0];
-    member1 = await guild.members.fetch(member1.id);
-    member2 = await guild.members.fetch(member2.id);
-    member3 = await guild.members.fetch(member3.id);
+    [member1, member2, member3] = await Promise.all([
+      guild.members.fetch(member1.id),
+      guild.members.fetch(member2.id),
+      guild.members.fetch(member3.id),
+    ]);
     let teamforreset1 = await sql.fetchmemberteam(member1.id);
     await resetteam(teamforreset1);
     let teamforreset2 = await sql.fetchmemberteam(member2.id);
@@ -119,9 +127,11 @@ module.exports = {
 
     const team = await sql.fetchteam(teamname);
     if (team.name != "No Team") {
-      await member1.roles.add(team.roleid);
-      await member2.roles.add(team.roleid);
-      await member3.roles.add(team.roleid);
+      await Promise.all([
+        member1.roles.add(team.roleid),
+        member2.roles.add(team.roleid),
+        member3.roles.add(team.roleid),
+      ]);
     }
     await sql.setteam([member1.id, member2.id, member3.id], teamname);
     miniraction.editReply(

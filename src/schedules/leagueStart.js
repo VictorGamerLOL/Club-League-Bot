@@ -1,10 +1,6 @@
 const Discord = require("discord.js");
 const schedule = require("node-schedule");
-const {
-  guildId,
-  pingRoleId,
-  pingChannelId,
-} = require("../../config.json");
+const { guildId, pingRoleId, pingChannelId } = require("../../config.json");
 const fs = require("fs");
 const sql = require("../utilities/sqlHandler.js");
 
@@ -21,8 +17,10 @@ module.exports = {
     return rules;
   },
   async execute() {
-    const guild = await this.client.guilds.fetch(guildId);
-    const channel = await this.client.channels.fetch(pingChannelId);
+    const [guild, channel] = await Promise.all([
+      this.client.guilds.fetch(guildId),
+      this.client.channels.fetch(pingChannelId),
+    ]);
     const members = await guild.members.fetch();
     for (let member of members) {
       if (!member[1].roles.cache.has(pingRoleId)) {

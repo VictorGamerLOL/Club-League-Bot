@@ -162,6 +162,19 @@ const SQLHandler = {
       `UPDATE states SET value="${value}" WHERE name="${name}"`
     );
   },
+  fetchAllMembers: async () => {
+    const members = await database.query(
+      `SELECT id FROM users WHERE NOT id="Nobody"`,
+      []
+    );
+    return members;
+  },
+  fetchSingleMember: async (member) => {
+    const memberData = await database.query(`SELECT * FROM users WHERE id=?`, [
+      member,
+    ]);
+    return memberData[0];
+  },
 };
 
 module.exports = SQLHandler;

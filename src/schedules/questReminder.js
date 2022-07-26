@@ -18,8 +18,10 @@ module.exports = {
     return rules;
   },
   async execute() {
-    const guild = await this.client.guilds.fetch(guildId);
-    const channel = await this.client.channels.fetch(pingChannelId);
+    const [guild, channel] = await Promise.all([
+      this.client.guilds.fetch(guildId),
+      this.client.channels.fetch(pingChannelId),
+    ]);
     const members = await guild.members.fetch();
     for (let member of members) {
       if (!member[1].roles.cache.has(pingRoleId)) {
@@ -37,7 +39,7 @@ module.exports = {
       .setStyle(Discord.ButtonStyle.Danger);
     let row = new Discord.ActionRowBuilder().addComponents([yes, no]);
     const message = await channel.send({
-      content: `<@&${pingRoleId}>\nClub quests has started.\nHave you done your club quests? (This means all 3)`,
+      content: `<@&${pingRoleId}>\nThis is your reminder to do club quests.\nHave you done your club quests? (This means all 3)`,
       components: [row],
     });
     logger.info(`Message sent: ${message.id}`);
