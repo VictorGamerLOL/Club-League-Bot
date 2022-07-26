@@ -21,10 +21,10 @@ module.exports = {
       try {
         await interaction.guild.members.fetch(x.id);
       } catch (e) {
-        const guildMemberDelete = require("../../events/guildMemberDelete");
+        const guildMemberDelete = require("../../events/guildMemberRemove");
         fakeguildmember = await interaction.client.users.fetch(x.id);
         fakeguildmember.guild = interaction.guild;
-        guildMemberDelete.execute(fakeguildmember);
+        await guildMemberDelete.execute(fakeguildmember);
         issue = true;
       }
     }
