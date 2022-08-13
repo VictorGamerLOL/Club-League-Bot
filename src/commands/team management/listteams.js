@@ -17,45 +17,25 @@ module.exports = {
       .setTitle("Teams")
       .setDescription("Here's a list of all teams and their members.");
     for (let team of teams) {
+      let members = [];
       if (
         team.user1 != "Nobody" ||
         team.user2 != "Nobody" ||
         team.user3 != "Nobody"
       ) {
-        try {
-          //Self-fixing mechanism for when the guildMemberRemove event fails
-          var [member1, member2, member3] = await Promise.all([
-            interaction.guild.members.fetch(team.user1),
-            interaction.guild.members.fetch(team.user2),
-            interaction.guild.members.fetch(team.user3),
-          ]);
-        } catch {
-          for (let i = 1; i < 4; i++) {
-            try {
-              await interaction.guild.members.fetch(team[`user${i}`]);
-            } catch {
-              let fakeguildmember = await interaction.client.users.fetch(
-                team[`user${i}`]
-              );
-              fakeguildmember.guild = interaction.guild;
-              const guildMemberRemove = require("../../events/guildMemberRemove"); //reduce, reuse, recycle
-              await guildMemberRemove.execute(fakeguildmember);
-            }
-          }
-          var member1 = { displayName: "Nobody" };
-          var member2 = { displayName: "Nobody" };
-          var member3 = { displayName: "Nobody" };
-        }
+        members = await Promise.all([
+          sql.fetchMemberByTag(team.user1),
+          sql.fetchMemberByTag(team.user2),
+          sql.fetchMemberByTag(team.user3),
+        ]);
+        members[0] = Discord.escapeMarkdown(members[0].name);
+        members[1] = Discord.escapeMarkdown(members[1].name);
+        members[2] = Discord.escapeMarkdown(members[2].name);
       } else {
-        var member1 = { displayName: "Nobody" };
-        var member2 = { displayName: "Nobody" };
-        var member3 = { displayName: "Nobody" };
+        members[0] = "Nobody";
+        members[1] = "Nobody";
+        members[2] = "Nobody";
       }
-      const members = [
-        member1.displayName,
-        member2.displayName,
-        member3.displayName,
-      ];
       embed.addFields({ name: team.name, value: members.join(", ") });
     }
     await interaction.deleteReply();

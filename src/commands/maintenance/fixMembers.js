@@ -1,6 +1,7 @@
 const Discord = require("discord.js");
 const sql = require("../../utilities/sqlHandler");
 const { guildId } = require("../../../config.json");
+const brawl = require("../../utilities/brawlApi");
 
 module.exports = {
   name: "fixmembers",
@@ -17,22 +18,44 @@ module.exports = {
   async execute(interaction) {
     let issue = false;
     await interaction.deferReply();
-    for (let x of await sql.fetchAllMembers()) {
-      try {
-        await interaction.guild.members.fetch(x.id);
-      } catch (e) {
-        const guildMemberDelete = require("../../events/guildMemberRemove");
-        fakeguildmember = await interaction.client.users.fetch(x.id);
-        fakeguildmember.guild = interaction.guild;
-        await guildMemberDelete.execute(fakeguildmember);
+    let dataMembers = await sql.fetchAllMembers();
+    let members = await brawl.getClubMembers();
+    function compare(a, b) {
+      if (a.name < b.name) {
+        return -1;
+      }
+      if (a.name > b.name) {
+        return 1;
+      }
+      return 0;
+    }
+    dataMembers.sort(compare);
+    members.sort(compare);
+    for (let member of dataMembers) { //Add club members that are not in the database
+      let result = members.findIndex((m) => {
+        if (m.name == member.name) {
+          return true;
+        }
+        return false;
+      });
+      if (result == -1) {
         issue = true;
+        await sql.addmember(member);
       }
     }
-    for (let x of await interaction.guild.members.cache) {
-      const result = await sql.fetchSingleMember(x[1].id);
-      if (result === undefined) {
-        sql.addmember(x[1].id);
+    for (let member of members) { //Remove club members in the database that are not in the club
+      let result = dataMembers.findIndex((m) => {
+        if (m.name == member.name) {
+          return true;
+        }
+        return false;
+      }
+      );
+      if (result == -1) {
         issue = true;
+        teamforreset = await sql.fetchmemberteam(member.name);
+        sql.resetteam(teamforreset.name);
+        await sql.delmember(member.tag);
       }
     }
     if (issue) {

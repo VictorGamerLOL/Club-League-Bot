@@ -16,6 +16,7 @@ myIntents.push(Discord.GatewayIntentBits.GuildMessages);
 myIntents.push(Discord.GatewayIntentBits.GuildMessageReactions);
 myIntents.push(Discord.GatewayIntentBits.MessageContent);
 
+
 const rest = new REST({ version: "9" }).setToken(token);
 
 logger.info("Starting bot...");
@@ -77,8 +78,8 @@ logger.info("Scheduling jobs...");
 const scheduleFiles = fs
   .readdirSync(path.join(__dirname, "./schedules"))
   .filter((file) => file.endsWith(".js")); // same with commands but schedule handling
-
 async function scheduler() {
+  await sql.init();
   const state = await sql.getState("weekType");
   for (const file of scheduleFiles) {
     const scheduleFile = require(path.join(__dirname, `./schedules/${file}`));
@@ -158,7 +159,6 @@ client.on("interactionCreate", async function (interaction) {
 });
 client.login(token);
 
-sql.init();
 
 logger.info("Initialising week toggler job...");
 

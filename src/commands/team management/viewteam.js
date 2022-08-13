@@ -28,7 +28,7 @@ module.exports = {
       .setMinValues(1)
       .setPlaceholder("Team");
     for (let teamname of teams) {
-      let option = new Discord.UnsafeSelectMenuOptionBuilder()
+      let option = new Discord.SelectMenuOptionBuilder()
         .setLabel(teamname)
         .setValue(teamname)
         .setEmoji("⚫");
@@ -68,48 +68,31 @@ module.exports = {
     await miniraction.deferReply();
     const teamname = miniraction.values[0];
     let team = await sql.fetchteam(teamname);
+    let teammembers = [];
     if (
-      team.user1 != "Nobody" ||
-      team.user2 != "Nobody" ||
-      team.user3 != "Nobody"
+      team.user1 == "Nobody" ||
+      team.user2 == "Nobody" ||
+      team.user3 == "Nobody"
     ) {
-      //The same self-fixing mechanism that was done in listteams.js
-      try {
-        var [member1, member2, member3] = await Promise.all([
-          interaction.guild.members.fetch(team.user1),
-          interaction.guild.members.fetch(team.user2),
-          interaction.guild.members.fetch(team.user3),
-        ]);
-      } catch {
-        for (let i = 1; i < 4; i++) {
-          try {
-            await interaction.guild.members.fetch(team[`user${i}`]);
-          } catch {
-            let fakeguildmember = await interaction.client.users.fetch(
-              team[`user${i}`]
-            );
-            fakeguildmember.guild = interaction.guild;
-            const guildMemberRemove = require("../../events/guildMemberRemove");
-            await guildMemberRemove.execute(fakeguildmember);
-          }
-        }
-        var member1 = { displayName: "Nobody" };
-        var member2 = { displayName: "Nobody" };
-        var member3 = { displayName: "Nobody" };
-      }
-    } else {
-      var member1 = { displayName: "Nobody" };
-      var member2 = { displayName: "Nobody" };
-      var member3 = { displayName: "Nobody" };
+      await miniraction.editReply("This team is empty.");
+      return;
     }
+    teammembers = await Promise.all([
+      sql.fetchMemberByTag(team.user1),
+      sql.fetchMemberByTag(team.user2),
+      sql.fetchMemberByTag(team.user3),
+    ]);
+    teammembers[0] = Discord.escapeMarkdown(teammembers[0].name);
+    teammembers[1] = Discord.escapeMarkdown(teammembers[1].name);
+    teammembers[2] = Discord.escapeMarkdown(teammembers[2].name);
     const embed = new Discord.EmbedBuilder()
       .setTitle(teamname)
       .setDescription(`Here are the details of team ***${teamname}***`)
       .addFields(
         { name: "Role", value: `<@&${team.roleid}>`, inline: false },
-        { name: "Member 1", value: `${member1.displayName}`, inline: true },
-        { name: "Member 2", value: `${member2.displayName}`, inline: true },
-        { name: "Member 3", value: `${member3.displayName}`, inline: true }
+        { name: "Member 1", value: `${teammembers[0]}`, inline: true },
+        { name: "Member 2", value: `${teammembers[1]}`, inline: true },
+        { name: "Member 3", value: `${teammembers[2]}`, inline: true }
       );
     miniraction.editReply({
       content: "​",
