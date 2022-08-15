@@ -1,6 +1,8 @@
 const token = require('../../config.json').brawlToken;
 const baseUrl = 'https://api.brawlstars.com/v1/';
 const clubId = ("%23" + require('../../config.json').clubId)
+const fetch = require('node-fetch');
+
 
 const options = {
   method: 'GET',
