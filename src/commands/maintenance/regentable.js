@@ -14,15 +14,7 @@ module.exports = {
   },
   async execute(interaction) {
     await interaction.deferReply();
-    let guild = await interaction.client.guilds.fetch(guildId);
-    let members = await guild.members.fetch();
-    membersList = [];
-    for (let member of members) {
-      console.log(member[1].user);
-      if (member[1].user.bot) continue;
-      membersList.push(member[1].user.id);
-    }
-    sql.regentables(membersList);
+    await sql.regentables();
     interaction.editReply("I have regenerated the tables.");
   },
 };

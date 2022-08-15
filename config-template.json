@@ -1,8 +1,10 @@
 {
-    "guildId": "YOURSERVERIDHERE",
-    "token" : "YOURTOKENHERE",
-    "cliendId": "YOURCLIENTIDHERE",
-    "pingRoleId": "YOURROLEIDHERE",
-    "pingChannelId": "YOURCHANNELIDHERE",
-    "logChannelId": "YOURCHANNELIDHERE"
+  "guildId": "YOURSERVERIDHERE",
+  "token" : "YOURTOKENHERE",
+  "cliendId": "YOURCLIENTIDHERE",
+  "pingRoleId": "YOURROLEIDHERE",
+  "pingChannelId": "YOURCHANNELIDHERE",
+  "logChannelId": "YOURCHANNELIDHERE",
+  "brawlToken": "YOURBRAWLSTARSAPITOKENHERE",
+  "clubId": "YOURCLUBIDHERE"
 }

@@ -1,5 +1,6 @@
 const db = require("sqlite3");
 const logger = require("./logger");
+const brawl = require("./brawlApi");
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -53,13 +54,15 @@ const SQLHandler = {
         )`);
     await database.execute(`INSERT INTO teams (name) VALUES ("No Team")`);
     await database.execute(`CREATE TABLE IF NOT EXISTS users (
-            id TEXT PRIMARY KEY NOT NULL,
+            tag TEXT PRIMARY KEY NOT NULL,
+            name TEXT NOT NULL,
+            discordId TEXT,
             eventNotifs INTEGER NOT NULL DEFAULT 1,
             scrimsNotifs INTEGER NOT NULL DEFAULT 0,
             team TEXT DEFAULT "No Team",
             FOREIGN KEY (team) REFERENCES teams(name) ON DELETE SET DEFAULT
         )`);
-    await database.execute(`INSERT INTO users (id) VALUES ("Nobody")`);
+    await database.execute(`INSERT INTO users (tag, name) VALUES ("Nobody", "Nobody")`);
     await database.execute(`CREATE TABLE IF NOT EXISTS states (
             name TEXT PRIMARY KEY NOT NULL,
             value TEXT NOT NULL
@@ -68,12 +71,13 @@ const SQLHandler = {
       `INSERT INTO states (name, value) VALUES ("weekType", "league")`
     );
   },
-  regentables: async (membersList) => {
+  regentables: async () => {
     await database.execute(`PRAGMA foreign_keys = OFF`);
-    await database.execute(`DELETE FROM users WHERE NOT id="Nobody"`);
-    let query = `INSERT INTO users (id) VALUES `;
+    await database.execute(`DELETE FROM users WHERE NOT tag="Nobody"`);
+    let query = `INSERT INTO users (tag, name) VALUES `;
+    let membersList = await brawl.getClubMembers();
     for (let member of membersList) {
-      query += `('${member}'), `;
+      query += `('${member.tag}', '${member.name}'), `;
     }
     query = query.slice(0, -2);
     await database.execute(query, []);
@@ -93,7 +97,7 @@ const SQLHandler = {
   },
   fetchmemberteam: async (member) => {
     const memberteamname = await database.query(
-      `SELECT team FROM users WHERE id=?`,
+      `SELECT team FROM users WHERE tag=?`,
       [member]
     );
     const team = await database.query(
@@ -113,13 +117,13 @@ const SQLHandler = {
       `INSERT INTO teams (name, roleid) VALUES ("${teamName}", "${roleid}")`
     );
   },
-  setteam: async (userIds, teamName) => {
+  setteam: async (userTags, teamName) => {
     await database.execute(
-      `UPDATE users SET team="${teamName}" WHERE id="${userIds[0]}" OR id="${userIds[1]}" OR id="${userIds[2]}"`
+      `UPDATE users SET team="${teamName}" WHERE tag="${userTags[0]}" OR tag="${userTags[1]}" OR tag="${userTags[2]}"`
     );
     if (teamName == "No Team") return;
     await database.execute(
-      `UPDATE teams SET user1="${userIds[0]}", user2="${userIds[1]}", user3="${userIds[2]}" WHERE name="${teamName}"`
+      `UPDATE teams SET user1="${userTags[0]}", user2="${userTags[1]}", user3="${userTags[2]}" WHERE name="${teamName}"`
     );
   },
   resetteam: async (teamName) => {
@@ -132,10 +136,10 @@ const SQLHandler = {
     );
   },
   delmember: async (member) => {
-    await database.execute(`DELETE FROM users WHERE id=?`, [member]);
+    await database.execute(`DELETE FROM users WHERE tag=?`, [member]);
   },
   addmember: async (member) => {
-    await database.execute(`INSERT INTO users (id) VALUES (?)`, [member]);
+    await database.execute(`INSERT INTO users (tag, name) VALUES (?)`, [member.tag, member.name]);
   },
   delteam: async (teamName) => {
     await database.execute(`DELETE FROM teams WHERE name="${teamName}"`);
@@ -164,16 +168,32 @@ const SQLHandler = {
   },
   fetchAllMembers: async () => {
     const members = await database.query(
-      `SELECT id FROM users WHERE NOT id="Nobody"`,
+      `SELECT tag, name FROM users WHERE NOT tag="Nobody"`,
       []
     );
     return members;
   },
-  fetchSingleMember: async (member) => {
-    const memberData = await database.query(`SELECT * FROM users WHERE id=?`, [
+  fetchMemberByTag: async (member) => {
+    const memberData = await database.query(`SELECT * FROM users WHERE tag=?`, [
       member,
     ]);
     return memberData[0];
+  },
+  fetchMemberByName: async (member) => {
+    const memberData = await database.query(`SELECT * FROM users WHERE name=?`, [
+      member,
+    ]);
+    return memberData[0];
+  },
+  bindMember: async (member, discordId) => {
+    await database.execute(
+      `UPDATE users SET discordId="${discordId}" WHERE tag="${member}"`
+    );
+  },
+  unbindMember: async (member) => {
+    await database.execute(
+      `UPDATE users SET discordId=NULL WHERE tag="${member}"`
+    );
   },
 };
 

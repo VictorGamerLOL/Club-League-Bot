@@ -4,9 +4,10 @@
   "description": "A simple bot to manage ping roles according to club league dates",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node ./src/utilities/test.js",
     "dev": "nodemon ./src/bot.js",
-    "start": "node ./src/bot.js"
+    "start": "node ./src/bot.js",
+    "apitest": "node ./src/utilities/brawlApi.js"
   },
   "author": "",
   "license": "SEE LICENSE IN LICENSE",
