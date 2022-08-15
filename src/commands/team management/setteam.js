@@ -147,8 +147,8 @@ module.exports = {
     async function giveRole(member, team) {
       if (team.name == "No Team") return;
       if (member.discordId) {
-        let memberDiscord = await utils.checkIfMemberExists(member.discordId);
-        if (memberDiscord) await memberDiscord.roles.add(team.roleId);
+        let memberDiscord = await utils.checkIfMemberExists(interaction.guild, member.discordId);
+        if (memberDiscord) await memberDiscord.roles.add(team.roleid);
       }
     }
     await Promise.all([
