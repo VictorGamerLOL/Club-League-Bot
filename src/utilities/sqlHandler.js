@@ -190,6 +190,11 @@ const SQLHandler = {
       `UPDATE users SET discordId="${discordId}" WHERE tag="${member}"`
     );
   },
+  unbindMember: async (member) => {
+    await database.execute(
+      `UPDATE users SET discordId=NULL WHERE tag="${member}"`
+    );
+  },
 };
 
 module.exports = SQLHandler;

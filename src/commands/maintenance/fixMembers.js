@@ -2,6 +2,7 @@ const Discord = require("discord.js");
 const sql = require("../../utilities/sqlHandler");
 const { guildId } = require("../../../config.json");
 const brawl = require("../../utilities/brawlApi");
+const utils = require("../../utilities/toolbox");
 
 module.exports = {
   name: "fixmembers",
@@ -54,8 +55,32 @@ module.exports = {
       if (result == -1) {
         issue = true;
         teamforreset = await sql.fetchmemberteam(member.name);
+        let [teamMember1, teamMember2, teamMember3] = await Promise.all([
+          sql.fetchMemberByTag(teamforreset.user1),
+          sql.fetchMemberByTag(teamforreset.user2),
+          sql.fetchMemberByTag(teamforreset.user3),
+        ])
+        async function removeRole (snowflake) {
+          if (!snowflake) return;
+          let member = await utils.checkIfMemberExists(interaction.guild, snowflake);
+          if (member) await member.roles.remove(teamforreset.roleId);
+        }
+        await Promise.all([
+          removeRole(teamMember1.discordId),
+          removeRole(teamMember2.discordId),
+          removeRole(teamMember3.discordId),
+        ]);
         sql.resetteam(teamforreset.name);
         await sql.delmember(member.tag);
+      }
+    }
+    dataMembers = await sql.fetchAllMembers();
+    for (let member of dataMembers) {
+      if (!member.discordId) continue;
+      let memberInGuild = await utils.checkIfMemberExists(interaction.guild, member.discordId);
+      if (!memberInGuild) {
+        issue = true;
+        await sql.unbindMember(member.tag);
       }
     }
     if (issue) {

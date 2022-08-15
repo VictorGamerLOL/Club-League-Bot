@@ -82,17 +82,26 @@ module.exports = {
       sql.fetchMemberByTag(team.user2),
       sql.fetchMemberByTag(team.user3),
     ]);
-    teammembers[0] = Discord.escapeMarkdown(teammembers[0].name);
-    teammembers[1] = Discord.escapeMarkdown(teammembers[1].name);
-    teammembers[2] = Discord.escapeMarkdown(teammembers[2].name);
+    teammembers[0].name = Discord.escapeMarkdown(teammembers[0].name);
+    teammembers[1].name = Discord.escapeMarkdown(teammembers[1].name);
+    teammembers[2].name = Discord.escapeMarkdown(teammembers[2].name);
+    function getMemberDiscord (member) {
+      if (member.discordId) {
+        return Discord.userMention(member.discordId);
+      }
+      return "N/A";
+    }
     const embed = new Discord.EmbedBuilder()
       .setTitle(teamname)
       .setDescription(`Here are the details of team ***${teamname}***`)
       .addFields(
         { name: "Role", value: `<@&${team.roleid}>`, inline: false },
-        { name: "Member 1", value: `${teammembers[0]}`, inline: true },
-        { name: "Member 2", value: `${teammembers[1]}`, inline: true },
-        { name: "Member 3", value: `${teammembers[2]}`, inline: true }
+        { name: "Member 1", value: `${teammembers[0].name}`, inline: true },
+        { name: "Member 2", value: `${teammembers[1].name}`, inline: true },
+        { name: "Member 3", value: `${teammembers[2].name}`, inline: true },
+        { name: "Member 1 Discord", value: `${getMemberDiscord(teammembers[0])}`, inline: true },
+        { name: "Member 2 Discord", value: `${getMemberDiscord(teammembers[1])}`, inline: true },
+        { name: "Member 3 Discord", value: `${getMemberDiscord(teammembers[2])}`, inline: true },
       );
     miniraction.editReply({
       content: "​",
