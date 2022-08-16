@@ -60,7 +60,7 @@ module.exports = {
         __dirname,
         `../../schedules/${file}`
       ));
-      if (scheduleFile.type != state) continue;
+      if (scheduleFile.type != state && scheduleFile.type != "any") continue;
       schedule.scheduleJob(
         scheduleFile.jobSchedule(),
         scheduleFile.execute.bind({ client: client })

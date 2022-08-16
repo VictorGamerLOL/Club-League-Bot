@@ -139,7 +139,7 @@ const SQLHandler = {
     await database.execute(`DELETE FROM users WHERE tag=?`, [member]);
   },
   addmember: async (member) => {
-    await database.execute(`INSERT INTO users (tag, name) VALUES (?)`, [member.tag, member.name]);
+    await database.execute(`INSERT INTO users (tag, name) VALUES (?, ?)`, [member.tag, member.name]);
   },
   delteam: async (teamName) => {
     await database.execute(`DELETE FROM teams WHERE name="${teamName}"`);
