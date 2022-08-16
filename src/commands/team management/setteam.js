@@ -219,7 +219,7 @@ module.exports = {
     try {
       interMember = await messageMember.awaitMessageComponent({
         filter: filterMember,
-        time: 15000,
+        time: 60000,
       });
     } catch {
       await messageMember.edit({
