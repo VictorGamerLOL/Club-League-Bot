@@ -60,7 +60,7 @@ module.exports = {
         async function removeRole (snowflake) {
           if (!snowflake) return;
           let member = await checkIfMemberExists(guild, snowflake);
-          if (member) await member.roles.remove(teamforreset.roleId);
+          if (member) await member.roles.remove(teamforreset.roleid);
         }
         await Promise.all([
           removeRole(teamMember1.discordId),
