@@ -75,7 +75,7 @@ module.exports = {
     
     for (let member of dataMembers) {
       if (!member.discordId) continue;
-      let memberInGuild = await checkIfMemberExists(interaction.guild, member.discordId);
+      let memberInGuild = await checkIfMemberExists(guild, member.discordId);
       if (!memberInGuild) {
         issue = true;
         await sql.unbindMember(member.tag);
