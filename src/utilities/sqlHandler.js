@@ -168,7 +168,7 @@ const SQLHandler = {
   },
   fetchAllMembers: async () => {
     const members = await database.query(
-      `SELECT tag, name FROM users WHERE NOT tag="Nobody"`,
+      `SELECT * FROM users WHERE NOT tag="Nobody"`,
       []
     );
     return members;
