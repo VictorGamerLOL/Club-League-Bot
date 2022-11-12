@@ -6,7 +6,6 @@ module.exports = {
     const victor = new RegExp("victor*", "i");
     const room = new RegExp("room*", "i");
     if (azuma.test(message.content)) {
-      message.channel.send("Sussy baka");
       message.react("980106629011877910");
     }
     if (victor.test(message.content)) {
