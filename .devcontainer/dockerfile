@@ -1,0 +1,50 @@
+############################################
+#  VictorGamerLOL's Arch Linux dockerfile  #
+#                                          #
+# Made this when github released their     #
+# codespaces feature to the public, so     #
+# I can make arch containers for any need  #
+# I might have. Feel free to use it also.  #
+# Has my dotfiles, so you might want       #
+# to modify that .gitconfig with your      #
+# own stuff.                               #
+############################################
+FROM archlinux:latest
+# Comment the line "NoExtract = usr/share/man/*" in /etc/pacman.conf to allow man pages to be installed
+RUN sed -i 's/NoExtract = usr\/share\/man\/*/#NoExtract = usr\/share\/man\/*/' /etc/pacman.conf
+# Uncomment the line "# Colors" to allow for pacman to have pretty colors
+RUN sed -i 's/# Colors/Colors/' /etc/pacman.conf
+# Reinstall every package that has a man page
+RUN pacman -Fy
+RUN pacman -S $(pacman -Qq $(pacman -Fq /usr/share/man/ | cut -d/ -f2) 2> /dev/null)
+# Install packages
+RUN pacman -Syyu --noconfirm && pacman -S --noconfirm git openssh sudo man-db man-pages neovim neofetch
+# Neofetch because why not
+ARG USERNAME="archie"
+ARG INSTALL_NODE="false"
+ARG INSTALL_ZSH="true"
+
+# Install node and npm if needed
+RUN if [ "$INSTALL_NODE" = "true" ]; then pacman -S --noconfirm nodejs; fi
+RUN if [ "$INSTALL_NODE" = "true" ]; then pacman -S --noconfirm npm; fi
+RUN if [ "$INSTALL_NODE" = "true" ]; then npm install -g npm@latest; fi
+
+# Add wheel group to sudoers
+RUN echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+# Add the user, give it a home directory and add it to the wheel group
+RUN useradd -m -s /bin/bash -G wheel $USERNAME
+
+# Add my dotfiles repo to $USERNAME's home directory
+USER $USERNAME
+RUN git clone --recurse-submodules "https://github.com/VictorGamerLOL/dotfiles" /home/$USERNAME/dotfiles
+RUN rm -rf /home/$USERNAME/dotfiles/.git
+RUN rm -rf /home/$USERNAME/dotfiles/.gitmodules
+RUN rm -rf /home/$USERNAME/dotfiles/.gitignore
+RUN rm -rf /home/$USERNAME/dotfiles/.gitconfig
+RUN mv -f /home/$USERNAME/dotfiles/{.,}* /home/$USERNAME; exit 0
+USER root
+
+# Add zsh if needed
+RUN if [ "$INSTALL_ZSH" = "true" ]; then pacman -S --noconfirm zsh starship; fi
+RUN if [ "$INSTALL_ZSH" = "true" ]; then chsh -s /bin/zsh $USERNAME; fi
