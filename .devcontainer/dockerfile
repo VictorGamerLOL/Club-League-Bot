@@ -18,7 +18,7 @@ RUN sed -i 's/# Colors/Colors/' /etc/pacman.conf
 # Reinstall every package that has a man page
 RUN pacman -Fy
 RUN pacman -Syy
-RUN pacman -S $(pacman -Qq $(pacman -Fq /usr/share/man/ | cut -d/ -f2) 2> /dev/null)
+RUN pacman -S --noconfirm $(pacman -Qq $(pacman -Fq /usr/share/man/ | cut -d/ -f2) 2> /dev/null)
 # Install packages
 RUN pacman -Syyu --noconfirm && pacman -S --noconfirm git openssh sudo man-db man-pages neovim neofetch
 # Neofetch because why not
