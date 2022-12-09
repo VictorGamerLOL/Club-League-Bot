@@ -17,6 +17,10 @@ module.exports = {
       );
     return command.toJSON();
   },
+  /**
+   * 
+   * @param {Discord.ChatInputCommandInteraction} interaction 
+   */
   async execute(interaction) {
     await interaction.deferReply();
     await this.weekToggle(interaction.client);
@@ -24,6 +28,10 @@ module.exports = {
 
     interaction.editReply("I have changed the week type to " + state);
   },
+  /**
+   * 
+   * @param {Discord.Client} client 
+   */
   async weekToggle(client) {
     const state = await sql.getState("weekType");
     const weekToggleJob = new schedule.RecurrenceRule();
@@ -50,6 +58,10 @@ module.exports = {
       logger.info("Successfully changed week type to 'league'");
     }
   },
+  /**
+   * 
+   * @param {Discord.Client} client 
+   */
   async scheduler(client) {
     const scheduleFiles = fs
       .readdirSync(path.join(__dirname, "../../schedules"))

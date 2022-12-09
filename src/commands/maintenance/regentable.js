@@ -14,6 +14,10 @@ module.exports = {
       .setDescription("Regenerate the user tables upon joining a new server.");
     return command.toJSON();
   },
+  /**
+   * 
+   * @param {Discord.ChatInputCommandInteraction} interaction 
+   */
   async execute(interaction) {
     await interaction.deferReply();
     await sql.regentables();

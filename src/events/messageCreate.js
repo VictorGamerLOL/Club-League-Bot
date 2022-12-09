@@ -1,6 +1,12 @@
+const Discord = require("discord.js");
+
 module.exports = {
   name: "messageCreate",
   once: false,
+  /**
+   * 
+   * @param {Discord.Message} message 
+   */
   async execute(message) {
     const azuma = new RegExp("azuma*", "i");
     const victor = new RegExp("victor*", "i");

@@ -12,6 +12,10 @@ module.exports = {
       .setDescription("Delete a team.");
     return command.toJSON();
   },
+  /**
+   * 
+   * @param {Discord.ChatInputCommandInteraction} interaction 
+   */
   async execute(interaction) {
     await interaction.deferReply();
     timeSeed = Date.now();

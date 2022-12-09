@@ -10,6 +10,10 @@ module.exports = {
       .setDescription("View the team and its members.");
     return command.toJSON();
   },
+  /**
+   * 
+   * @param {Discord.ChatInputCommandInteraction} interaction 
+   */
   async execute(interaction) {
     await interaction.deferReply();
     timeSeed = Date.now();
@@ -39,12 +43,16 @@ module.exports = {
     ]);
     await interaction.editReply({
       content: "Select the team you want to view",
-    });
-    message = await interaction.channel.send({
+    }); 
+    /**
+     * 
+     * @type {Discord.Message}
+     */
+    let message = await interaction.channel.send({
       content: "​", //Disregard the invisible character
       components: [actionRow],
     });
-    const filter = (interactionn) => {
+    const filter = (/** @type {Discord.StringSelectMenuInteraction} */interactionn) => {
       if (
         interactionn.customId === `${timeSeed}teamSelect` &&
         interactionn.member.id == interaction.member.id

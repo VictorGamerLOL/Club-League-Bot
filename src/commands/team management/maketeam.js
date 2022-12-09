@@ -24,6 +24,10 @@ module.exports = {
       );
     return command.toJSON();
   },
+  /**
+   * 
+   * @param {Discord.ChatInputCommandInteraction} interaction 
+   */
   async execute(interaction) {
     await interaction.deferReply();
     teamname = await interaction.options.getString("teamname");

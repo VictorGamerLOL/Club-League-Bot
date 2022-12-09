@@ -16,10 +16,13 @@ module.exports = {
       );
     return command.toJSON();
   },
+  /**
+   * 
+   * @param {Discord.ChatInputCommandInteraction} interaction 
+   */
   async execute(interaction) {
     await interaction.deferReply();
-    let guild = await interaction.client.guilds.fetch(GUILDID);
-    let members = await guild.members.fetch();
+    let members = await interaction.guild.members.fetch();
     let promisearray = [];
     for (let member of members) {
       if (!member[1].roles.cache.has(PINGROLEID)) {

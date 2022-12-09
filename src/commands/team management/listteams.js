@@ -10,6 +10,10 @@ module.exports = {
       .setDescription("List all teams.");
     return command.toJSON();
   },
+  /**
+   * 
+   * @param {Discord.ChatInputCommandInteraction} interaction 
+   */
   async execute(interaction) {
     await interaction.deferReply();
     let teams = await sql.listteams();

@@ -18,6 +18,10 @@ module.exports = {
       );
     return command.toJSON();
   },
+  /**
+   * 
+   * @param {Discord.ChatInputCommandInteraction} interaction 
+   */
   async execute(interaction) {
     let issue = false;
     await interaction.deferReply();

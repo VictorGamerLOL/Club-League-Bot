@@ -11,6 +11,10 @@ module.exports = {
       .setDescription("List all members that are not in a team/not have a discord bound to them/are not in club.");
     return command.toJSON();
   },
+  /**
+   * 
+   * @param {Discord.ChatInputCommandInteraction} interaction 
+   */
   async execute(interaction) {
     await interaction.deferReply();
     await utils.fixMembers(interaction.client);

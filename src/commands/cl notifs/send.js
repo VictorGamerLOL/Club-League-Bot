@@ -15,6 +15,10 @@ module.exports = {
       .setDescription("Send the message with the buttons to the ping channel.");
     return command.toJSON();
   },
+  /**
+   * 
+   * @param {Discord.ChatInputCommandInteraction} interaction 
+   */
   async execute(interaction) {
     await interaction.deferReply();
     let channel = await interaction.client.channels.fetch(PINGCHANNELID);

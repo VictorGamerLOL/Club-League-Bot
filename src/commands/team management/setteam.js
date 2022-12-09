@@ -16,6 +16,10 @@ module.exports = {
       .setDescription("Assign 3 members to a teamname.");
     return command.toJSON();
   },
+  /**
+   * 
+   * @param {Discord.ChatInputCommandInteraction} interaction 
+   */
   async execute(interaction) {
     await interaction.deferReply();
     let members = await sql.fetchAllMembers();

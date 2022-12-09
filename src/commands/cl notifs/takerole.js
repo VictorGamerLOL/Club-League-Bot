@@ -17,6 +17,10 @@ module.exports = {
       );
     return command.toJSON();
   },
+  /**
+   * 
+   * @param {Discord.ChatInputCommandInteraction} interaction 
+   */
   async execute(interaction) {
     await interaction.deferReply();
     let guild = await interaction.client.guilds.fetch(GUILDID);
