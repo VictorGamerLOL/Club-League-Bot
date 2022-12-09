@@ -14,10 +14,10 @@ module.exports = {
     if (azuma.test(message.content)) {
       message.react("980106629011877910");
     }
-    if (victor.test(message.content)) {
+    else if (victor.test(message.content)) {
       message.react("991083268671692810");
     }
-    if (room.test(message.content)) {
+    else if (room.test(message.content)) {
       message.react("963839018846523422");
     }
   },
