@@ -40,7 +40,8 @@ const client = new Discord.Client({
 logger.info("Client made");
 logger.info("Registering commands...");
 
-client.commands = new Discord.Collection();
+
+client.commands= new Discord.Collection();
 const commandFolders = fs.readdirSync(path.join(__dirname, "./commands")); //Get folder of commands and sync with fs
 var commands = [];
 
@@ -49,6 +50,9 @@ for (const folder of commandFolders) {
     .readdirSync(path.join(__dirname, `./commands/${folder}`))
     .filter((file) => file.endsWith(".js")); //check folders in the folders (categorise) and read all he ones that end with js
   for (const file of commandFiles) {
+    /**
+     * @type {command}
+     */
     const command = require(path.join(
       __dirname,
       `./commands/${folder}/${file}`
