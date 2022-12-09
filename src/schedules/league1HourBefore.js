@@ -1,5 +1,8 @@
 const schedule = require("node-schedule");
-const { pingRoleId, pingChannelId } = require("../../config.json");
+const dotenv = require("dotenv");
+dotenv.config();
+const PINGROLEID = process.env.PINGROLEID;
+const PINGCHANNELID = process.env.PINGCHANNELID;
 const fs = require("fs");
 const sql = require("../utilities/sqlHandler.js");
 
@@ -16,9 +19,9 @@ module.exports = {
     return rules;
   },
   async execute() {
-    const channel = await this.client.channels.fetch(pingChannelId);
+    const channel = await this.client.channels.fetch(PINGCHANNELID);
     const message = await channel.send(
-      `<@&${pingRoleId}>\n1 hour remains of club league.\nHave you done your club league?`
+      `<@&${PINGROLEID}>\n1 hour remains of club league.\nHave you done your club league?`
     );
     fs.writeFileSync("./message2.txt", message.id);
   },

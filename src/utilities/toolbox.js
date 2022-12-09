@@ -1,6 +1,8 @@
 const Discord = require("discord.js");
 const sql = require("./sqlHandler");
-const { guildId } = require("../../config.json");
+const dotenv = require("dotenv");
+dotenv.config();
+const GUILDID = process.env.GUILDID;
 const brawl = require("./brawlApi");
 
 module.exports = {
@@ -15,7 +17,7 @@ module.exports = {
   fixMembers: async function (client) {
     checkIfMemberExists = this.checkIfMemberExists
     let issue = false;
-    let guild = await client.guilds.fetch(guildId);
+    let guild = await client.guilds.fetch(GUILDID);
     let dataMembers = await sql.fetchAllMembers();
     let members = await brawl.getClubMembers();
     function compare(a, b) {

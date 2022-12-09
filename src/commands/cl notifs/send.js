@@ -1,6 +1,9 @@
 const Discord = require("discord.js");
 const fs = require("fs");
-const { pingRoleId, pingChannelId } = require("../../../config.json");
+const dotenv = require("dotenv");
+dotenv.config();
+const PINGROLEID = process.env.PINGROLEID;
+const PINGCHANNELID = process.env.PINGCHANNELID;
 
 module.exports = {
   name: "send",
@@ -14,7 +17,7 @@ module.exports = {
   },
   async execute(interaction) {
     await interaction.deferReply();
-    let channel = await interaction.client.channels.fetch(pingChannelId);
+    let channel = await interaction.client.channels.fetch(PINGCHANNELID);
     let yes = new Discord.ButtonBuilder()
       .setCustomId("yes")
       .setLabel("Yes")
@@ -25,7 +28,7 @@ module.exports = {
       .setStyle(Discord.ButtonStyle.Danger);
     let row = new Discord.ActionRowBuilder().addComponents([yes, no]);
     const message = await channel.send({
-      content: `<@&${pingRoleId}>\nA new day of Club league has started.\nHave you done your club league?`,
+      content: `<@&${PINGROLEID}>\nA new day of Club league has started.\nHave you done your club league?`,
       components: [row],
     });
     fs.writeFileSync("./message.txt", message.id);

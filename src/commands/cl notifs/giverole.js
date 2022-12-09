@@ -1,5 +1,8 @@
 const Discord = require("discord.js");
-const { guildId, pingRoleId } = require("../../../config.json");
+const dotenv = require("dotenv");
+dotenv.config();
+const GUILDID = process.env.GUILDID;
+const PINGROLEID = process.env.PINGROLEID;
 
 module.exports = {
   name: "giverole",
@@ -15,13 +18,13 @@ module.exports = {
   },
   async execute(interaction) {
     await interaction.deferReply();
-    let guild = await interaction.client.guilds.fetch(guildId);
+    let guild = await interaction.client.guilds.fetch(GUILDID);
     let members = await guild.members.fetch();
     let promisearray = [];
     for (let member of members) {
-      if (!member[1].roles.cache.has(pingRoleId)) {
+      if (!member[1].roles.cache.has(PINGROLEID)) {
         //Do not ask me why it starts at array index 1 for I do not know why :<
-        promisearray.push(member[1].roles.add(pingRoleId));
+        promisearray.push(member[1].roles.add(PINGROLEID));
       }
     }
     await Promise.all(promisearray);

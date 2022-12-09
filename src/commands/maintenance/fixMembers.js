@@ -1,6 +1,8 @@
 const Discord = require("discord.js");
 const sql = require("../../utilities/sqlHandler");
-const { guildId } = require("../../../config.json");
+const dotenv = require("dotenv");
+dotenv.config();
+const GUILDID = process.env.GUILDID;
 const brawl = require("../../utilities/brawlApi");
 const utils = require("../../utilities/toolbox");
 

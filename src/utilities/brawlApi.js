@@ -1,13 +1,15 @@
-const token = require('../../config.json').brawlToken;
+const dotenv = require('dotenv');
+dotenv.config();
+const TOKEN = process.env.BRAWLTOKEN
 const baseUrl = 'https://api.brawlstars.com/v1/';
-const clubId = ("%23" + require('../../config.json').clubId)
+const CLUBID = ("%23" + process.env.CLUBID)
 const fetch = require('node-fetch');
 
 
 const options = {
   method: 'GET',
   headers: {
-    Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${TOKEN}`,
   }
 };
 
@@ -22,7 +24,7 @@ const afetch = (request) => {  //Asyncronous fetch because I need async await.
 
 module.exports = {
   getClubMembers: async () => {
-    const response = await afetch(`clubs/${clubId}/members`);
+    const response = await afetch(`clubs/${CLUBID}/members`);
     return response.items;
   }
 }

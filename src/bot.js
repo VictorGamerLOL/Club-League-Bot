@@ -1,7 +1,12 @@
 const Discord = require("discord.js");
 const logger = require("./utilities/logger");
 const schedule = require("node-schedule");
-const { guildId, token, clientId, pingRoleId } = require("../config.json");
+const dotenv = require("dotenv");
+dotenv.config();
+const GUILDID = process.env.GUILDID;
+const TOKEN = process.env.TOKEN;
+const CLIENTID = process.env.CLIENTID;
+const PINGROLEID = process.env.PINGROLEID;
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 const fs = require("fs");
@@ -17,7 +22,7 @@ myIntents.push(Discord.GatewayIntentBits.GuildMessageReactions);
 myIntents.push(Discord.GatewayIntentBits.MessageContent);
 
 
-const rest = new REST({ version: "9" }).setToken(token);
+const rest = new REST({ version: "9" }).setToken(TOKEN);
 
 logger.info("Starting bot...");
 logger.info("Making client...");
@@ -97,7 +102,7 @@ scheduler();
 async function putCommands() {
   try {
     logger.info("Started refreshing application (/) commands.");
-    await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
+    await rest.put(Routes.applicationGuildCommands(CLIENTID, GUILDID), {
       body: commands,
     });
 
@@ -110,13 +115,13 @@ putCommands();
 
 async function buttonYes(interaction) {
   await interaction.deferReply({ ephemeral: true });
-  if (!(await interaction.member.roles.cache.has(pingRoleId))) {
+  if (!(await interaction.member.roles.cache.has(PINGROLEID))) {
     interaction.editReply(
       "You already have done club league what do you want?"
     );
     return;
   }
-  interaction.member.roles.remove(pingRoleId);
+  interaction.member.roles.remove(PINGROLEID);
   interaction.editReply(
     "You have been removed from the notification role. Thanks for doing your part."
   );
@@ -124,13 +129,13 @@ async function buttonYes(interaction) {
 }
 async function buttonNo(interaction) {
   await interaction.deferReply({ ephemeral: true });
-  if (await interaction.member.roles.cache.has(pingRoleId)) {
+  if (await interaction.member.roles.cache.has(PINGROLEID)) {
     interaction.editReply(
       "You already have the club league notification role what do you want?"
     );
     return;
   }
-  interaction.member.roles.add(pingRoleId);
+  interaction.member.roles.add(PINGROLEID);
   interaction.editReply("You have gained the club league notification role");
   return;
 }
@@ -157,7 +162,7 @@ client.on("interactionCreate", async function (interaction) {
     } else return;
   }
 });
-client.login(token);
+client.login(TOKEN);
 
 
 logger.info("Initialising week toggler job...");

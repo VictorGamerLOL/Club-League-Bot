@@ -2,7 +2,11 @@
 const Discord = require("discord.js");
 const logger = require("../utilities/logger.js");
 const schedule = require("node-schedule");
-const { guildId, pingRoleId, pingChannelId } = require("../../config.json");
+const dotenv = require("dotenv");
+dotenv.config();
+const GUILDID = process.env.GUILDID;
+const PINGROLEID = process.env.PINGROLEID;
+const PINGCHANNELID = process.env.PINGCHANNELID;
 const fs = require("fs");
 
 module.exports = {
@@ -19,13 +23,13 @@ module.exports = {
   },
   async execute() {
     const [guild, channel] = await Promise.all([
-      this.client.guilds.fetch(guildId),
-      this.client.channels.fetch(pingChannelId),
+      this.client.guilds.fetch(GUILDID),
+      this.client.channels.fetch(PINGCHANNELID),
     ]);
     const members = await guild.members.fetch();
     for (let member of members) {
-      if (member[1].roles.cache.has(pingRoleId)) {
-        member[1].roles.remove(pingRoleId);
+      if (member[1].roles.cache.has(PINGROLEID)) {
+        member[1].roles.remove(PINGROLEID);
       }
     }
     const message = await channel.messages.fetch(
