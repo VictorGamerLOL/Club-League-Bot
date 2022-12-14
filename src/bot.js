@@ -1,48 +1,61 @@
-const Discord = require("discord.js");
+const {
+  Client,
+  GatewayIntentBits,
+  Collection,
+  ChatInputCommandInteraction,
+  Partials,
+  InteractionType,
+} = require("discord.js");
 const logger = require("./utilities/logger");
 const schedule = require("node-schedule");
 const dotenv = require("dotenv");
-dotenv.config();
-const GUILDID = process.env.GUILDID;
-const TOKEN = process.env.TOKEN;
-const CLIENTID = process.env.CLIENTID;
-const PINGROLEID = process.env.PINGROLEID;
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 const fs = require("fs");
 const sql = require("./utilities/sqlHandler.js");
 const path = require("path");
-const myIntents = [];
-myIntents.push(Discord.GatewayIntentBits.Guilds);
-myIntents.push(Discord.GatewayIntentBits.GuildMembers);
-myIntents.push(Discord.GatewayIntentBits.GuildPresences);
-myIntents.push(Discord.GatewayIntentBits.GuildVoiceStates);
-myIntents.push(Discord.GatewayIntentBits.GuildMessages);
-myIntents.push(Discord.GatewayIntentBits.GuildMessageReactions);
-myIntents.push(Discord.GatewayIntentBits.MessageContent);
+const { weekToggle } = require("./utilities/weekToggle");
 
+dotenv.config();
+const GUILDID = process.env.GUILDID;
+const TOKEN = process.env.TOKEN;
+const CLIENTID = process.env.CLIENTID;
+const PINGROLEID = process.env.PINGROLEID;
+const myIntents = [];
+myIntents.push(GatewayIntentBits.Guilds);
+myIntents.push(GatewayIntentBits.GuildMembers);
+myIntents.push(GatewayIntentBits.GuildPresences);
+myIntents.push(GatewayIntentBits.GuildVoiceStates);
+myIntents.push(GatewayIntentBits.GuildMessages);
+myIntents.push(GatewayIntentBits.GuildMessageReactions);
+myIntents.push(GatewayIntentBits.MessageContent);
 
 const rest = new REST({ version: "9" }).setToken(TOKEN);
 
 logger.info("Starting bot...");
 logger.info("Making client...");
 
-const client = new Discord.Client({
+/**
+ * The client that is used by the bot to connect to discord,
+ * with a property that stores a Discord.js collection of commands.
+ * @type {Client & { commands: Collection<string, command> } }
+ */
+const client = new Client({
   intents: myIntents,
   partials: [
-    Discord.Partials.Message,
-    Discord.Partials.Channel,
-    Discord.Partials.Reaction,
-    Discord.Partials.GuildMember,
+    Partials.Message,
+    Partials.Channel,
+    Partials.Reaction,
+    Partials.GuildMember,
   ],
-});
+}); //Because of no typescript shenanigans I can add the commands property later.
 
 logger.info("Client made");
 logger.info("Registering commands...");
 
-
-client.commands= new Discord.Collection();
+client.commands = new Collection();
 const commandFolders = fs.readdirSync(path.join(__dirname, "./commands")); //Get folder of commands and sync with fs
+/** @type {RESTPostAPIApplicationCommandsJSONBody[]} */
 var commands = [];
 
 for (const folder of commandFolders) {
@@ -51,6 +64,7 @@ for (const folder of commandFolders) {
     .filter((file) => file.endsWith(".js")); //check folders in the folders (categorise) and read all he ones that end with js
   for (const file of commandFiles) {
     /**
+     * The current command that it is being handled.
      * @type {command}
      */
     const command = require(path.join(
@@ -117,6 +131,12 @@ async function putCommands() {
 }
 putCommands();
 
+/**
+ * Contains the function that must be done when the Yes button is pressed.
+ * It checks if the user has already done club league and responds accordingly.
+ * @param {ChatInputCommandInteraction} interaction
+ * @returns {void}
+ */
 async function buttonYes(interaction) {
   await interaction.deferReply({ ephemeral: true });
   if (!(await interaction.member.roles.cache.has(PINGROLEID))) {
@@ -131,6 +151,11 @@ async function buttonYes(interaction) {
   );
   return;
 }
+/**
+ *
+ * @param {ChatInputCommandInteraction} interaction
+ * @returns {void}
+ */
 async function buttonNo(interaction) {
   await interaction.deferReply({ ephemeral: true });
   if (await interaction.member.roles.cache.has(PINGROLEID)) {
@@ -145,7 +170,7 @@ async function buttonNo(interaction) {
 }
 
 client.on("interactionCreate", async function (interaction) {
-  if (interaction.type == Discord.InteractionType.ApplicationCommand) {
+  if (interaction.type == InteractionType.ApplicationCommand) {
     const command = client.commands.get(interaction.commandName);
     if (command.permissionRequirements != undefined) {
       if (!interaction.member.permissions.has(command.permissionRequirements)) {
@@ -157,7 +182,7 @@ client.on("interactionCreate", async function (interaction) {
     if (!command) return;
     command.execute(interaction);
   }
-  if (interaction.type == Discord.InteractionType.MessageComponent) {
+  if (interaction.type == InteractionType.MessageComponent) {
     if (interaction.customId === "yes") {
       buttonYes(interaction);
     }
@@ -168,7 +193,6 @@ client.on("interactionCreate", async function (interaction) {
 });
 client.login(TOKEN);
 
-
 logger.info("Initialising week toggler job...");
 
 const weekToggleJob = new schedule.RecurrenceRule();
@@ -177,27 +201,5 @@ weekToggleJob.hour = 14;
 weekToggleJob.minute = 1;
 weekToggleJob.tz = "ETC/UTC";
 
-const weekToggle = async () => {
-  const state = await sql.getState("weekType");
-  if (state == "league") {
-    logger.info("Changing week type to 'quest'");
-    await sql.setState("weekType", "quest");
-    schedule.gracefulShutdown();
-    logger.info("Terminated current jobs");
-    await scheduler();
-    schedule.scheduleJob(weekToggleJob, weekToggle);
-    logger.info("Successfully changed week type to 'quest'");
-  }
-  if (state == "quest") {
-    logger.info("Changing week type to 'league'");
-    await sql.setState("weekType", "league");
-    schedule.gracefulShutdown();
-    logger.info("Terminated current jobs");
-    await scheduler();
-    schedule.scheduleJob(weekToggleJob, weekToggle);
-    logger.info("Successfully changed week type to 'league'");
-  }
-};
-
-schedule.scheduleJob(weekToggleJob, weekToggle);
+schedule.scheduleJob(weekToggleJob, weekToggle(scheduler, weekToggleJob));
 logger.info("Week toggler job started");

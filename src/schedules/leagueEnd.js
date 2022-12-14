@@ -34,10 +34,14 @@ module.exports = {
     const message = await channel.messages.fetch(
       fs.readFileSync("./message.txt", "utf8")
     );
-    message.delete();
+    try {
+      message.delete();
+    } catch {}
     const message2 = await channel.messages.fetch(
       fs.readFileSync("./message2.txt", "utf8")
     );
-    message2.delete();
+    try {
+      message2.delete();
+    } catch {}
   },
 };
