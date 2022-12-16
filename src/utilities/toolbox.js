@@ -15,7 +15,7 @@ module.exports = {
     }
   },
   fixMembers: async function (client) {
-    checkIfMemberExists = this.checkIfMemberExists
+    checkIfMemberExists = this.checkIfMemberExists;
     let issue = false;
     let guild = await client.guilds.fetch(GUILDID);
     let dataMembers = await sql.fetchAllMembers();
@@ -31,9 +31,14 @@ module.exports = {
     }
     dataMembers.sort(compare);
     members.sort(compare);
-    for (let member of members) { //Add club members that are not in the database
+    for (let member of members) {
+      //Add club members that are not in the database
       let result = dataMembers.findIndex((m) => {
-        if (m.name == member.name) {
+        if (m.tag == member.tag) {
+          if (m.name != member.name) {
+            issue = true;
+            sql.editMember(member.tag, member.name);
+          }
           return true;
         }
         return false;
@@ -43,14 +48,14 @@ module.exports = {
         await sql.addmember(member);
       }
     }
-    for (let member of dataMembers) { //Remove club members in the database that are not in the club
+    for (let member of dataMembers) {
+      //Remove club members in the database that are not in the club
       let result = members.findIndex((m) => {
-        if (m.name == member.name) {
+        if (m.tag == member.tag) {
           return true;
         }
         return false;
-      }
-      );
+      });
       if (result == -1) {
         issue = true;
         teamforreset = await sql.fetchmemberteam(member.tag);
@@ -58,8 +63,8 @@ module.exports = {
           sql.fetchMemberByTag(teamforreset.user1),
           sql.fetchMemberByTag(teamforreset.user2),
           sql.fetchMemberByTag(teamforreset.user3),
-        ])
-        async function removeRole (snowflake) {
+        ]);
+        async function removeRole(snowflake) {
           if (!snowflake) return;
           let member = await checkIfMemberExists(guild, snowflake);
           if (member) await member.roles.remove(teamforreset.roleid);
@@ -74,7 +79,7 @@ module.exports = {
       }
     }
     dataMembers = await sql.fetchAllMembers();
-    
+
     for (let member of dataMembers) {
       if (!member.discordId) continue;
       let memberInGuild = await checkIfMemberExists(guild, member.discordId);
@@ -84,9 +89,9 @@ module.exports = {
       }
     }
     if (issue) {
-      return true
+      return true;
     } else {
-      return false
+      return false;
     }
-  }
-}
+  },
+};

@@ -12,9 +12,9 @@ const dotenv = require("dotenv");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 const fs = require("fs");
-const sql = require("./utilities/sqlHandler.js");
 const path = require("path");
 const { weekToggle } = require("./utilities/weekToggle");
+const { scheduler } = require("./utilities/scheduler");
 
 dotenv.config();
 const GUILDID = process.env.GUILDID;
@@ -98,24 +98,7 @@ for (const file of eventFiles) {
 logger.info("Registered events");
 logger.info("Scheduling jobs...");
 
-const scheduleFiles = fs
-  .readdirSync(path.join(__dirname, "./schedules"))
-  .filter((file) => file.endsWith(".js")); // same with commands but schedule handling
-async function scheduler() {
-  await sql.init();
-  const state = await sql.getState("weekType");
-  for (const file of scheduleFiles) {
-    const scheduleFile = require(path.join(__dirname, `./schedules/${file}`));
-    if (scheduleFile.type != state && scheduleFile.type != "any") continue;
-    schedule.scheduleJob(
-      scheduleFile.jobSchedule(),
-      scheduleFile.execute.bind({ client: client })
-    );
-    logger.info(`Scheduled ${scheduleFile.type} job:`, scheduleFile.name);
-  }
-  logger.info("Scheduled jobs");
-}
-scheduler();
+scheduler(client);
 
 async function putCommands() {
   try {
@@ -201,5 +184,8 @@ weekToggleJob.hour = 14;
 weekToggleJob.minute = 1;
 weekToggleJob.tz = "ETC/UTC";
 
-schedule.scheduleJob(weekToggleJob, weekToggle(scheduler, weekToggleJob));
+schedule.scheduleJob(
+  weekToggleJob,
+  weekToggle.bind(undefined, scheduler, weekToggleJob)
+);
 logger.info("Week toggler job started");

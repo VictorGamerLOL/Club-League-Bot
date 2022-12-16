@@ -62,7 +62,9 @@ const SQLHandler = {
             team TEXT DEFAULT "No Team",
             FOREIGN KEY (team) REFERENCES teams(name) ON DELETE SET DEFAULT
         )`);
-    await database.execute(`INSERT INTO users (tag, name) VALUES ("Nobody", "Nobody")`);
+    await database.execute(
+      `INSERT INTO users (tag, name) VALUES ("Nobody", "Nobody")`
+    );
     await database.execute(`CREATE TABLE IF NOT EXISTS states (
             name TEXT PRIMARY KEY NOT NULL,
             value TEXT NOT NULL
@@ -139,7 +141,10 @@ const SQLHandler = {
     await database.execute(`DELETE FROM users WHERE tag=?`, [member]);
   },
   addmember: async (member) => {
-    await database.execute(`INSERT INTO users (tag, name) VALUES (?, ?)`, [member.tag, member.name]);
+    await database.execute(`INSERT INTO users (tag, name) VALUES (?, ?)`, [
+      member.tag,
+      member.name,
+    ]);
   },
   delteam: async (teamName) => {
     await database.execute(`DELETE FROM teams WHERE name="${teamName}"`);
@@ -180,9 +185,10 @@ const SQLHandler = {
     return memberData[0];
   },
   fetchMemberByName: async (member) => {
-    const memberData = await database.query(`SELECT * FROM users WHERE name=?`, [
-      member,
-    ]);
+    const memberData = await database.query(
+      `SELECT * FROM users WHERE name=?`,
+      [member]
+    );
     return memberData[0];
   },
   bindMember: async (member, discordId) => {
@@ -193,6 +199,11 @@ const SQLHandler = {
   unbindMember: async (member) => {
     await database.execute(
       `UPDATE users SET discordId=NULL WHERE tag="${member}"`
+    );
+  },
+  editMember: async (member, name) => {
+    await database.execute(
+      `UPDATE users SET name="${name}" WHERE tag="${member}"`
     );
   },
 };

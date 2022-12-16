@@ -15,7 +15,10 @@ const weekToggle = async (scheduler, weekToggleJob) => {
     schedule.gracefulShutdown();
     logger.info("Terminated current jobs");
     await scheduler();
-    schedule.scheduleJob(weekToggleJob, weekToggle);
+    schedule.scheduleJob(
+      weekToggleJob,
+      weekToggle.bind(undefined, scheduler, weekToggleJob)
+    );
     logger.info("Successfully changed week type to 'quest'");
   }
   if (state == "quest") {
@@ -24,7 +27,10 @@ const weekToggle = async (scheduler, weekToggleJob) => {
     schedule.gracefulShutdown();
     logger.info("Terminated current jobs");
     await scheduler();
-    schedule.scheduleJob(weekToggleJob, weekToggle);
+    schedule.scheduleJob(
+      weekToggleJob,
+      weekToggle.bind(undefined, scheduler, weekToggleJob)
+    );
     logger.info("Successfully changed week type to 'league'");
   }
 };
