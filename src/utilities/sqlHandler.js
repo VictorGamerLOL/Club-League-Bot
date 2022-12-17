@@ -13,7 +13,7 @@ let database = new db.Database("./database.db", (err) => {
 
 database.query = function (sql, params) {
   //Stolen function from the internet because I need promises thanks https://blog.pagesd.info/2019/10/29/use-sqlite-node-async-await/
-  var that = this;
+  let that = this;
   return new Promise(function (resolve, reject) {
     that.all(sql, params, function (error, rows) {
       if (error) reject(error);
@@ -22,7 +22,7 @@ database.query = function (sql, params) {
   });
 };
 database.execute = function (sql, params) {
-  var that = this;
+  let that = this;
   return new Promise(function (resolve, reject) {
     that.run(sql, params, function (error) {
       if (error) reject(error);

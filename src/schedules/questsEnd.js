@@ -1,6 +1,4 @@
 //The usual
-const Discord = require("discord.js");
-const logger = require("../utilities/logger.js");
 const schedule = require("node-schedule");
 const dotenv = require("dotenv");
 dotenv.config();

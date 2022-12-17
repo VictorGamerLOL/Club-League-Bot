@@ -5,6 +5,12 @@ const GUILDID = process.env.GUILDID;
 const brawl = require("./brawlApi");
 
 module.exports = {
+  /**
+   *
+   * @param {import("discord.js").Guild} guild
+   * @param {import("discord.js").Snowflake} snowflake
+   * @returns
+   */
   checkIfMemberExists: async function (guild, snowflake) {
     try {
       let member = await guild.members.fetch(snowflake);

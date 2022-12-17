@@ -2,7 +2,6 @@ const {
   Client,
   GatewayIntentBits,
   Collection,
-  ChatInputCommandInteraction,
   Partials,
   InteractionType,
 } = require("discord.js");
@@ -56,7 +55,7 @@ logger.info("Registering commands...");
 client.commands = new Collection();
 const commandFolders = fs.readdirSync(path.join(__dirname, "./commands")); //Get folder of commands and sync with fs
 /** @type {RESTPostAPIApplicationCommandsJSONBody[]} */
-var commands = [];
+let commands = [];
 
 for (const folder of commandFolders) {
   const commandFiles = fs
@@ -117,7 +116,7 @@ putCommands();
 /**
  * Contains the function that must be done when the Yes button is pressed.
  * It checks if the user has already done club league and responds accordingly.
- * @param {ChatInputCommandInteraction} interaction
+ * @param {import("discord.js").ChatInputCommandInteraction} interaction
  * @returns {void}
  */
 async function buttonYes(interaction) {

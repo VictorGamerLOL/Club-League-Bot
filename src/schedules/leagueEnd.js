@@ -5,7 +5,6 @@ const GUILDID = process.env.GUILDID;
 const PINGROLEID = process.env.PINGROLEID;
 const PINGCHANNELID = process.env.PINGCHANNELID;
 const fs = require("fs");
-const sql = require("../utilities/sqlHandler.js");
 
 module.exports = {
   name: "leagueEnd",
@@ -42,6 +41,8 @@ module.exports = {
     );
     try {
       message2.delete();
-    } catch {}
+    } catch {
+      return;
+    }
   },
 };
