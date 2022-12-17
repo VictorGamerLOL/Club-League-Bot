@@ -50,3 +50,5 @@ USER root
 # Add zsh if needed
 RUN if [ "$INSTALL_ZSH" = "true" ]; then pacman -S --noconfirm zsh starship; fi
 RUN if [ "$INSTALL_ZSH" = "true" ]; then chsh -s /bin/zsh $USERNAME; fi
+
+USER $USERNAME

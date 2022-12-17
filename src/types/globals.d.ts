@@ -9,3 +9,4 @@ declare global {
     ): Promise<void>;
   }
 }
+export { __global__ as global };
