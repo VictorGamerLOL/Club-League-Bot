@@ -17,8 +17,8 @@ module.exports = {
     return command.toJSON();
   },
   /**
-   * 
-   * @param {Discord.ChatInputCommandInteraction} interaction 
+   *
+   * @param {Discord.ChatInputCommandInteraction} interaction
    */
   async execute(interaction) {
     await interaction.deferReply();
@@ -153,7 +153,10 @@ module.exports = {
     async function giveRole(member, team) {
       if (team.name == "No Team") return;
       if (member.discordId) {
-        let memberDiscord = await utils.checkIfMemberExists(interaction.guild, member.discordId);
+        let memberDiscord = await utils.checkIfMemberExists(
+          interaction.guild,
+          member.discordId
+        );
         if (memberDiscord) await memberDiscord.roles.add(team.roleid);
       }
     }

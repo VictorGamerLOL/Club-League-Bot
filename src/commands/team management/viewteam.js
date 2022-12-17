@@ -11,8 +11,8 @@ module.exports = {
     return command.toJSON();
   },
   /**
-   * 
-   * @param {Discord.ChatInputCommandInteraction} interaction 
+   *
+   * @param {Discord.ChatInputCommandInteraction} interaction
    */
   async execute(interaction) {
     await interaction.deferReply();
@@ -43,16 +43,18 @@ module.exports = {
     ]);
     await interaction.editReply({
       content: "Select the team you want to view",
-    }); 
+    });
     /**
-     * 
+     *
      * @type {Discord.Message}
      */
     let message = await interaction.channel.send({
       content: "​", //Disregard the invisible character
       components: [actionRow],
     });
-    const filter = (/** @type {Discord.StringSelectMenuInteraction} */interactionn) => {
+    const filter = (
+      /** @type {Discord.StringSelectMenuInteraction} */ interactionn
+    ) => {
       if (
         interactionn.customId === `${timeSeed}teamSelect` &&
         interactionn.member.id == interaction.member.id
@@ -93,7 +95,7 @@ module.exports = {
     teammembers[0].name = Discord.escapeMarkdown(teammembers[0].name);
     teammembers[1].name = Discord.escapeMarkdown(teammembers[1].name);
     teammembers[2].name = Discord.escapeMarkdown(teammembers[2].name);
-    function getMemberDiscord (member) {
+    function getMemberDiscord(member) {
       if (member.discordId) {
         return Discord.userMention(member.discordId);
       }
@@ -107,9 +109,21 @@ module.exports = {
         { name: "Member 1", value: `${teammembers[0].name}`, inline: true },
         { name: "Member 2", value: `${teammembers[1].name}`, inline: true },
         { name: "Member 3", value: `${teammembers[2].name}`, inline: true },
-        { name: "Member 1 Discord", value: `${getMemberDiscord(teammembers[0])}`, inline: true },
-        { name: "Member 2 Discord", value: `${getMemberDiscord(teammembers[1])}`, inline: true },
-        { name: "Member 3 Discord", value: `${getMemberDiscord(teammembers[2])}`, inline: true },
+        {
+          name: "Member 1 Discord",
+          value: `${getMemberDiscord(teammembers[0])}`,
+          inline: true,
+        },
+        {
+          name: "Member 2 Discord",
+          value: `${getMemberDiscord(teammembers[1])}`,
+          inline: true,
+        },
+        {
+          name: "Member 3 Discord",
+          value: `${getMemberDiscord(teammembers[2])}`,
+          inline: true,
+        }
       );
     miniraction.editReply({
       content: "​",

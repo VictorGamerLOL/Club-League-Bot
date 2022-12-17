@@ -19,17 +19,16 @@ module.exports = {
     return command.toJSON();
   },
   /**
-   * 
-   * @param {Discord.ChatInputCommandInteraction} interaction 
+   *
+   * @param {Discord.ChatInputCommandInteraction} interaction
    */
   async execute(interaction) {
     let issue = false;
     await interaction.deferReply();
-    issue = await utils.fixMembers(interaction.client)
+    issue = await utils.fixMembers(interaction.client);
     if (issue) {
       await interaction.editReply("I have fixed the database.");
-    }
-    else {
+    } else {
       await interaction.editReply("I have no issues with the database.");
     }
   },

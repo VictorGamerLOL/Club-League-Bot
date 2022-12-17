@@ -9,18 +9,20 @@ module.exports = {
   slashBuilder() {
     const command = new Discord.SlashCommandBuilder()
       .setName("bind")
-      .setDescription("Bind someone's Discord account to their Brawl Stars account.")
+      .setDescription(
+        "Bind someone's Discord account to their Brawl Stars account."
+      )
       .addUserOption((option) =>
         option
           .setName("user")
           .setDescription("The user to bind.")
           .setRequired(true)
-      )
+      );
     return command.toJSON();
   },
   /**
-   * 
-   * @param {Discord.ChatInputCommandInteraction} interaction 
+   *
+   * @param {Discord.ChatInputCommandInteraction} interaction
    */
   async execute(interaction) {
     await interaction.deferReply();
@@ -37,11 +39,11 @@ module.exports = {
       return 0;
     }
     members.sort(compare);
-    let member = null
+    let member = null;
     try {
       member = await this.getMember(interaction, timeSeed, members);
     } catch {
-      return
+      return;
     }
     await sql.bindMember(member.member, user.id);
     await member.interaction.editReply("Member bound successfully.");
@@ -122,4 +124,4 @@ module.exports = {
     };
     return { interaction: interMember, member: member };
   },
-}
+};

@@ -13,8 +13,8 @@ module.exports = {
     return command.toJSON();
   },
   /**
-   * 
-   * @param {Discord.ChatInputCommandInteraction} interaction 
+   *
+   * @param {Discord.ChatInputCommandInteraction} interaction
    */
   async execute(interaction) {
     await interaction.deferReply();

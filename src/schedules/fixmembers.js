@@ -1,5 +1,5 @@
-const utils = require('../utilities/toolbox.js');
-const schedule = require('node-schedule');
+const utils = require("../utilities/toolbox.js");
+const schedule = require("node-schedule");
 
 module.exports = {
   name: "fixmembers",
@@ -15,5 +15,5 @@ module.exports = {
   },
   async execute() {
     await utils.fixMembers(this.client);
-  }
-}
+  },
+};

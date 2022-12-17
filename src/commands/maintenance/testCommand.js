@@ -17,12 +17,15 @@ module.exports = {
     return command.toJSON();
   },
   /**
-   * 
-   * @param {Discord.ChatInputCommandInteraction} interaction 
+   *
+   * @param {Discord.ChatInputCommandInteraction} interaction
    */
   async execute(interaction) {
     await interaction.deferReply();
-    let result = await utils.checkIfMemberExists(interaction.guild, "123456789");
+    let result = await utils.checkIfMemberExists(
+      interaction.guild,
+      "123456789"
+    );
     interaction.editReply(`Result: ${result}`);
-  }
-}
+  },
+};
