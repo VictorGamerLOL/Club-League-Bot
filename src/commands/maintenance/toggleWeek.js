@@ -1,9 +1,6 @@
 const Discord = require("discord.js");
-const logger = require("../../utilities/logger");
 const schedule = require("node-schedule");
 const sql = require("../../utilities/sqlHandler.js");
-const fs = require("fs");
-const path = require("path");
 const weekToggle = require("../../utilities/weekToggle.js");
 const scheduler = require("../../utilities/scheduler.js");
 

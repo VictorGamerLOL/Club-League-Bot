@@ -1,7 +1,6 @@
 const Discord = require("discord.js");
 const dotenv = require("dotenv");
 dotenv.config();
-const GUILDID = process.env.GUILDID;
 const PINGROLEID = process.env.PINGROLEID;
 
 module.exports = {

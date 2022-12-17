@@ -18,7 +18,7 @@ module.exports = {
    */
   async execute(interaction) {
     await interaction.deferReply();
-    timeSeed = Date.now();
+    let timeSeed = Date.now();
     let teams = [];
     for (let teamname of await sql.fetchteams()) {
       if (teamname.name == "No Team") continue;

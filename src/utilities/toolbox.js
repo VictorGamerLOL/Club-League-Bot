@@ -1,4 +1,3 @@
-const Discord = require("discord.js");
 const sql = require("./sqlHandler");
 const dotenv = require("dotenv");
 dotenv.config();
@@ -58,7 +57,7 @@ module.exports = {
       });
       if (result == -1) {
         issue = true;
-        teamforreset = await sql.fetchmemberteam(member.tag);
+        let teamforreset = await sql.fetchmemberteam(member.tag);
         let [teamMember1, teamMember2, teamMember3] = await Promise.all([
           sql.fetchMemberByTag(teamforreset.user1),
           sql.fetchMemberByTag(teamforreset.user2),

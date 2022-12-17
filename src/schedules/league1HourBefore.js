@@ -4,7 +4,6 @@ dotenv.config();
 const PINGROLEID = process.env.PINGROLEID;
 const PINGCHANNELID = process.env.PINGCHANNELID;
 const fs = require("fs");
-const sql = require("../utilities/sqlHandler.js");
 
 module.exports = {
   name: "league1HourBefore",

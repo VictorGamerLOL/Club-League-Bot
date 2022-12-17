@@ -1,6 +1,9 @@
 {
   "name": "club-league-bot",
   "version": "1.0.0",
+  "engines": {
+    "node": ">=10.0.0"
+  },
   "description": "A simple bot to manage ping roles according to club league dates",
   "main": "index.js",
   "scripts": {
