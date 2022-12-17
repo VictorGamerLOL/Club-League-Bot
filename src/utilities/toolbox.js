@@ -20,7 +20,12 @@ module.exports = {
     }
   },
   fixMembers: async function (client) {
-    checkIfMemberExists = this.checkIfMemberExists;
+    async function removeRole(snowflake) {
+      if (!snowflake) return;
+      let member = await checkIfMemberExists(guild, snowflake);
+      if (member) await member.roles.remove(teamforreset.roleid);
+    }
+    let checkIfMemberExists = this.checkIfMemberExists;
     let issue = false;
     let guild = await client.guilds.fetch(GUILDID);
     let dataMembers = await sql.fetchAllMembers();
@@ -69,11 +74,6 @@ module.exports = {
           sql.fetchMemberByTag(teamforreset.user2),
           sql.fetchMemberByTag(teamforreset.user3),
         ]);
-        async function removeRole(snowflake) {
-          if (!snowflake) return;
-          let member = await checkIfMemberExists(guild, snowflake);
-          if (member) await member.roles.remove(teamforreset.roleid);
-        }
         await Promise.all([
           removeRole(teamMember1.discordId),
           removeRole(teamMember2.discordId),

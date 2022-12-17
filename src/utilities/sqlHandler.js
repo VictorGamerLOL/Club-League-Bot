@@ -37,7 +37,7 @@ const SQLHandler = {
       `SELECT name FROM sqlite_schema WHERE type='table' and name not like 'sqlite_%'`,
       []
     );
-    if (tables.length != 0) {
+    if (tables.length !== 0) {
       return;
     }
     database.run(`PRAGMA foreign_keys = OFF`);

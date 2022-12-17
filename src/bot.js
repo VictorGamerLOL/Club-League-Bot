@@ -100,12 +100,12 @@ logger.info("Scheduling jobs...");
 scheduler(client);
 
 async function putCommands() {
+  // I tell you that this code block is very necessary codacy so *shut*.
   try {
     logger.info("Started refreshing application (/) commands.");
     await rest.put(Routes.applicationGuildCommands(CLIENTID, GUILDID), {
       body: commands,
     });
-
     logger.info("Successfully reloaded application (/) commands.");
   } catch (error) {
     logger.error(error);
