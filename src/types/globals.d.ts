@@ -1,7 +1,7 @@
-import {
+const {
   ChatInputCommandInteraction,
   RESTPostAPIApplicationCommandsJSONBody,
-} from "discord.js";
+} = require("discord.js");
 
 declare global {
   interface command {
