@@ -4,6 +4,8 @@ declare global {
     description: string;
     permissionRequirements: string[];
     slashBuilder: import("discord.js").RESTPostAPIApplicationCommandsJSONBody;
-    execute(interaction: import("discord.js").ChatInputCommandInteraction): Promise<void>;
+    execute(
+      interaction: import("discord.js").ChatInputCommandInteraction
+    ): Promise<void>;
   }
 }
